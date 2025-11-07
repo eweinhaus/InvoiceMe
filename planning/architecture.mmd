@@ -1,0 +1,509 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#3b82f6', 'primaryTextColor':'#fff', 'primaryBorderColor':'#2563eb', 'lineColor':'#64748b', 'secondaryColor':'#f1f5f9', 'tertiaryColor':'#e2e8f0', 'background':'#ffffff', 'mainBkg':'#ffffff', 'textColor':'#1e293b'}}}%%
+
+%% Architecture Overview
+graph TB
+    subgraph "Client Layer"
+        Browser[Web Browser]
+        User[User]
+    end
+
+    subgraph "Frontend - React SPA"
+        direction TB
+        subgraph "Presentation Layer"
+            Pages[Pages<br/>Customers, Invoices, Payments]
+            Components[UI Components<br/>shadcn/ui + Tailwind]
+        end
+        
+        subgraph "MVVM Layer"
+            ViewModels[ViewModels<br/>Business Logic]
+            Hooks[React Hooks<br/>State Management]
+        end
+        
+        subgraph "Data Layer"
+            ReactQuery[React Query<br/>Server State]
+            Axios[Axios Client<br/>HTTP Requests]
+        end
+    end
+
+    subgraph "Backend - Spring Boot API"
+        direction TB
+        subgraph "Presentation Layer"
+            Controllers[REST Controllers<br/>Customer, Invoice, Payment]
+            ExceptionHandler[Global Exception Handler]
+        end
+        
+        subgraph "Application Layer - CQRS"
+            Commands[Command Handlers<br/>Write Operations]
+            Queries[Query Handlers<br/>Read Operations]
+            DTOs[DTOs<br/>Data Transfer Objects]
+        end
+        
+        subgraph "Domain Layer - DDD"
+            CustomerEntity[Customer Entity<br/>Rich Domain Model]
+            InvoiceEntity[Invoice Entity<br/>Rich Domain Model]
+            PaymentEntity[Payment Entity<br/>Rich Domain Model]
+        end
+        
+        subgraph "Infrastructure Layer"
+            Repositories[JPA Repositories]
+            Security[Spring Security<br/>OAuth2]
+            Config[Configuration]
+        end
+    end
+
+    subgraph "Database Layer"
+        H2Dev[(H2 Database<br/>Development)]
+        PostgresTest[(PostgreSQL<br/>Testing)]
+        PostgresProd[(PostgreSQL<br/>Production RDS)]
+    end
+
+    subgraph "External Services"
+        GoogleOAuth[Google OAuth2<br/>Authentication]
+    end
+
+    User --> Browser
+    Browser --> Pages
+    Pages --> Components
+    Components --> ViewModels
+    ViewModels --> Hooks
+    Hooks --> ReactQuery
+    ReactQuery --> Axios
+    Axios --> Controllers
+    
+    Controllers --> Commands
+    Controllers --> Queries
+    Commands --> CustomerEntity
+    Commands --> InvoiceEntity
+    Commands --> PaymentEntity
+    Queries --> CustomerEntity
+    Queries --> InvoiceEntity
+    Queries --> PaymentEntity
+    Commands --> DTOs
+    Queries --> DTOs
+    
+    CustomerEntity --> Repositories
+    InvoiceEntity --> Repositories
+    PaymentEntity --> Repositories
+    
+    Repositories --> H2Dev
+    Repositories --> PostgresTest
+    Repositories --> PostgresProd
+    
+    Security --> GoogleOAuth
+    Controllers --> Security
+
+    style Browser fill:#3b82f6,stroke:#2563eb,color:#fff
+    style Pages fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style ViewModels fill:#10b981,stroke:#059669,color:#fff
+    style Controllers fill:#f59e0b,stroke:#d97706,color:#fff
+    style CustomerEntity fill:#ef4444,stroke:#dc2626,color:#fff
+    style InvoiceEntity fill:#ef4444,stroke:#dc2626,color:#fff
+    style PaymentEntity fill:#ef4444,stroke:#dc2626,color:#fff
+    style GoogleOAuth fill:#4285f4,stroke:#1a73e8,color:#fff
+
+%% Backend Architecture - Clean Architecture Layers
+graph LR
+    subgraph "Backend Architecture Layers"
+        direction TB
+        
+        subgraph "Presentation Layer"
+            REST[REST Controllers]
+            ExHandler[Exception Handler]
+        end
+        
+        subgraph "Application Layer - CQRS"
+            direction LR
+            subgraph "Commands"
+                CreateCmd[Create Commands]
+                UpdateCmd[Update Commands]
+                DeleteCmd[Delete Commands]
+            end
+            subgraph "Queries"
+                GetQuery[Get Queries]
+                ListQuery[List Queries]
+            end
+        end
+        
+        subgraph "Domain Layer - DDD"
+            direction TB
+            Customer[Customer<br/>- validate<br/>- updateDetails]
+            Invoice[Invoice<br/>- calculateTotal<br/>- calculateBalance<br/>- addLineItem<br/>- canBeMarkedAsSent<br/>- applyPayment]
+            Payment[Payment<br/>- validateAmount<br/>- applyToInvoice]
+        end
+        
+        subgraph "Infrastructure Layer"
+            JPA[JPA Repositories]
+            SecurityConfig[Security Config]
+            DBConfig[Database Config]
+        end
+    end
+    
+    REST --> CreateCmd
+    REST --> UpdateCmd
+    REST --> DeleteCmd
+    REST --> GetQuery
+    REST --> ListQuery
+    
+    CreateCmd --> Customer
+    CreateCmd --> Invoice
+    CreateCmd --> Payment
+    UpdateCmd --> Customer
+    UpdateCmd --> Invoice
+    DeleteCmd --> Customer
+    GetQuery --> Customer
+    GetQuery --> Invoice
+    GetQuery --> Payment
+    ListQuery --> Customer
+    ListQuery --> Invoice
+    ListQuery --> Payment
+    
+    Customer --> JPA
+    Invoice --> JPA
+    Payment --> JPA
+    
+    REST --> ExHandler
+    REST --> SecurityConfig
+
+    style Customer fill:#ef4444,stroke:#dc2626,color:#fff
+    style Invoice fill:#ef4444,stroke:#dc2626,color:#fff
+    style Payment fill:#ef4444,stroke:#dc2626,color:#fff
+    style CreateCmd fill:#10b981,stroke:#059669,color:#fff
+    style UpdateCmd fill:#10b981,stroke:#059669,color:#fff
+    style DeleteCmd fill:#10b981,stroke:#059669,color:#fff
+    style GetQuery fill:#3b82f6,stroke:#2563eb,color:#fff
+    style ListQuery fill:#3b82f6,stroke:#2563eb,color:#fff
+
+%% Frontend Architecture - MVVM Pattern
+graph TB
+    subgraph "Frontend Architecture - MVVM"
+        direction TB
+        
+        subgraph "View Layer"
+            CustomerPage[Customers Page]
+            InvoicePage[Invoices Page]
+            PaymentPage[Payments Page]
+            CustomerList[CustomerList Component]
+            InvoiceForm[InvoiceForm Component]
+            PaymentForm[PaymentForm Component]
+        end
+        
+        subgraph "ViewModel Layer"
+            CustomerVM[CustomerViewModel<br/>- Form validation<br/>- Data transformation<br/>- Business logic]
+            InvoiceVM[InvoiceViewModel<br/>- Line item management<br/>- Balance calculation<br/>- Status transitions]
+            PaymentVM[PaymentViewModel<br/>- Payment validation<br/>- Invoice selection]
+        end
+        
+        subgraph "Model Layer"
+            ReactQueryState[React Query<br/>Server State]
+            LocalState[Local State<br/>UI State]
+            API[API Client<br/>Axios]
+        end
+    end
+    
+    CustomerPage --> CustomerList
+    InvoicePage --> InvoiceForm
+    PaymentPage --> PaymentForm
+    
+    CustomerList --> CustomerVM
+    InvoiceForm --> InvoiceVM
+    PaymentForm --> PaymentVM
+    
+    CustomerVM --> ReactQueryState
+    InvoiceVM --> ReactQueryState
+    PaymentVM --> ReactQueryState
+    
+    CustomerVM --> LocalState
+    InvoiceVM --> LocalState
+    PaymentVM --> LocalState
+    
+    ReactQueryState --> API
+
+    style CustomerVM fill:#10b981,stroke:#059669,color:#fff
+    style InvoiceVM fill:#10b981,stroke:#059669,color:#fff
+    style PaymentVM fill:#10b981,stroke:#059669,color:#fff
+    style ReactQueryState fill:#3b82f6,stroke:#2563eb,color:#fff
+
+%% Vertical Slice Architecture - Feature Organization
+graph TB
+    subgraph "Vertical Slice Architecture"
+        direction TB
+        
+        subgraph "Customer Feature Slice"
+            CustomerController[CustomerController]
+            CreateCustomerCmd[CreateCustomerCommand]
+            CreateCustomerHandler[CreateCustomerHandler]
+            CustomerEntity[Customer Entity]
+            CustomerRepo[CustomerRepository]
+            CustomerDTO[CustomerDTO]
+        end
+        
+        subgraph "Invoice Feature Slice"
+            InvoiceController[InvoiceController]
+            CreateInvoiceCmd[CreateInvoiceCommand]
+            CreateInvoiceHandler[CreateInvoiceHandler]
+            InvoiceEntity[Invoice Entity]
+            InvoiceRepo[InvoiceRepository]
+            InvoiceDTO[InvoiceDTO]
+        end
+        
+        subgraph "Payment Feature Slice"
+            PaymentController[PaymentController]
+            RecordPaymentCmd[RecordPaymentCommand]
+            RecordPaymentHandler[RecordPaymentHandler]
+            PaymentEntity[Payment Entity]
+            PaymentRepo[PaymentRepository]
+            PaymentDTO[PaymentDTO]
+        end
+    end
+    
+    CustomerController --> CreateCustomerCmd
+    CreateCustomerCmd --> CreateCustomerHandler
+    CreateCustomerHandler --> CustomerEntity
+    CreateCustomerHandler --> CustomerRepo
+    CreateCustomerHandler --> CustomerDTO
+    
+    InvoiceController --> CreateInvoiceCmd
+    CreateInvoiceCmd --> CreateInvoiceHandler
+    CreateInvoiceHandler --> InvoiceEntity
+    CreateInvoiceHandler --> InvoiceRepo
+    CreateInvoiceHandler --> InvoiceDTO
+    
+    PaymentController --> RecordPaymentCmd
+    RecordPaymentCmd --> RecordPaymentHandler
+    RecordPaymentHandler --> PaymentEntity
+    RecordPaymentHandler --> PaymentRepo
+    RecordPaymentHandler --> PaymentDTO
+
+    style CustomerEntity fill:#ef4444,stroke:#dc2626,color:#fff
+    style InvoiceEntity fill:#ef4444,stroke:#dc2626,color:#fff
+    style PaymentEntity fill:#ef4444,stroke:#dc2626,color:#fff
+
+%% Invoice Lifecycle State Machine
+stateDiagram-v2
+    [*] --> DRAFT: Create Invoice
+    DRAFT --> DRAFT: Update Invoice
+    DRAFT --> SENT: Mark as Sent
+    SENT --> SENT: Record Partial Payment
+    SENT --> PAID: Record Full Payment
+    PAID --> [*]: Complete
+    
+    note right of DRAFT
+        Can be edited
+        Can add/remove line items
+    end note
+    
+    note right of SENT
+        Cannot be edited
+        Can record payments
+        Balance decreases with payments
+    end note
+    
+    note right of PAID
+        Final state
+        Balance = 0
+    end note
+
+%% Data Flow - Create Invoice with Payment
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Domain
+    participant Database
+    
+    User->>Frontend: Create Invoice (Draft)
+    Frontend->>Backend: POST /api/invoices
+    Backend->>Domain: CreateInvoiceCommand
+    Domain->>Domain: calculateTotal()
+    Domain->>Database: Save Invoice
+    Database-->>Domain: Invoice Saved
+    Domain-->>Backend: InvoiceDTO
+    Backend-->>Frontend: 201 Created
+    Frontend-->>User: Invoice Created
+    
+    User->>Frontend: Mark Invoice as Sent
+    Frontend->>Backend: POST /api/invoices/{id}/send
+    Backend->>Domain: MarkInvoiceSentCommand
+    Domain->>Domain: canBeMarkedAsSent()
+    Domain->>Database: Update Status
+    Database-->>Domain: Updated
+    Domain-->>Backend: InvoiceDTO
+    Backend-->>Frontend: 200 OK
+    Frontend-->>User: Invoice Sent
+    
+    User->>Frontend: Record Payment
+    Frontend->>Backend: POST /api/payments
+    Backend->>Domain: RecordPaymentCommand
+    Domain->>Domain: validateAmount()
+    Domain->>Domain: applyPayment()
+    Domain->>Domain: calculateBalance()
+    Domain->>Database: Save Payment & Update Invoice
+    Database-->>Domain: Saved
+    Domain-->>Backend: PaymentDTO
+    Backend-->>Frontend: 201 Created
+    Frontend-->>User: Payment Recorded
+
+%% Authentication Flow
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Google
+    
+    User->>Frontend: Click "Sign in with Google"
+    Frontend->>Backend: Redirect to /oauth2/authorization/google
+    Backend->>Google: OAuth2 Authorization Request
+    Google->>User: Login/Consent Screen
+    User->>Google: Approve
+    Google->>Backend: Authorization Code
+    Backend->>Google: Exchange Code for Token
+    Google-->>Backend: Access Token + User Info
+    Backend->>Backend: Create Session
+    Backend-->>Frontend: Redirect to Dashboard
+    Frontend-->>User: Authenticated
+
+%% Deployment Architecture - AWS
+graph TB
+    subgraph "AWS Cloud"
+        subgraph "Frontend Deployment"
+            S3[S3 Bucket<br/>Static Files]
+            CloudFront[CloudFront CDN<br/>Distribution]
+        end
+        
+        subgraph "Backend Deployment"
+            EB[Elastic Beanstalk<br/>or ECS Fargate]
+            SpringBoot[Spring Boot App<br/>JAR]
+        end
+        
+        subgraph "Database"
+            RDS[RDS PostgreSQL<br/>Production DB]
+        end
+        
+        subgraph "Security"
+            IAM[IAM Roles]
+            Secrets[Secrets Manager<br/>OAuth Credentials]
+        end
+    end
+    
+    subgraph "External"
+        Google[Google OAuth2]
+        Users[End Users]
+    end
+    
+    Users --> CloudFront
+    CloudFront --> S3
+    Users --> EB
+    EB --> SpringBoot
+    SpringBoot --> RDS
+    SpringBoot --> Google
+    SpringBoot --> Secrets
+    EB --> IAM
+
+    style S3 fill:#ff9900,stroke:#ff8800,color:#fff
+    style CloudFront fill:#ff9900,stroke:#ff8800,color:#fff
+    style EB fill:#ff9900,stroke:#ff8800,color:#fff
+    style RDS fill:#ff9900,stroke:#ff8800,color:#fff
+
+%% Component Relationships - Frontend Features
+graph LR
+    subgraph "Customers Feature"
+        CustomerPage[CustomersPage]
+        CustomerList[CustomerList]
+        CustomerForm[CustomerForm]
+        CustomerVM[CustomerViewModel]
+        useCustomers[useCustomers Hook]
+        useCustomerMutations[useCustomerMutations]
+    end
+    
+    subgraph "Invoices Feature"
+        InvoicePage[InvoicesPage]
+        InvoiceList[InvoiceList]
+        InvoiceForm[InvoiceForm]
+        LineItemForm[LineItemForm]
+        InvoiceVM[InvoiceViewModel]
+        useInvoices[useInvoices Hook]
+        useInvoiceMutations[useInvoiceMutations]
+    end
+    
+    subgraph "Payments Feature"
+        PaymentPage[PaymentsPage]
+        PaymentList[PaymentList]
+        PaymentForm[PaymentForm]
+        PaymentVM[PaymentViewModel]
+        usePayments[usePayments Hook]
+        usePaymentMutations[usePaymentMutations]
+    end
+    
+    subgraph "Shared"
+        APIClient[API Client]
+        ReactQuery[React Query]
+    end
+    
+    CustomerPage --> CustomerList
+    CustomerPage --> CustomerForm
+    CustomerList --> CustomerVM
+    CustomerForm --> CustomerVM
+    CustomerVM --> useCustomers
+    CustomerVM --> useCustomerMutations
+    useCustomers --> ReactQuery
+    useCustomerMutations --> APIClient
+    
+    InvoicePage --> InvoiceList
+    InvoicePage --> InvoiceForm
+    InvoiceForm --> LineItemForm
+    InvoiceList --> InvoiceVM
+    InvoiceForm --> InvoiceVM
+    InvoiceVM --> useInvoices
+    InvoiceVM --> useInvoiceMutations
+    useInvoices --> ReactQuery
+    useInvoiceMutations --> APIClient
+    
+    PaymentPage --> PaymentList
+    PaymentPage --> PaymentForm
+    PaymentList --> PaymentVM
+    PaymentForm --> PaymentVM
+    PaymentVM --> usePayments
+    PaymentVM --> usePaymentMutations
+    usePayments --> ReactQuery
+    usePaymentMutations --> APIClient
+    
+    APIClient --> ReactQuery
+
+%% CQRS Pattern - Command vs Query Separation
+graph TB
+    subgraph "CQRS Pattern"
+        direction LR
+        
+        subgraph "Command Side - Write"
+            CreateCmd[Create Commands]
+            UpdateCmd[Update Commands]
+            DeleteCmd[Delete Commands]
+            CommandHandlers[Command Handlers]
+            DomainLogic[Domain Business Logic]
+            WriteDB[(Write Database)]
+        end
+        
+        subgraph "Query Side - Read"
+            GetQuery[Get Queries]
+            ListQuery[List Queries]
+            QueryHandlers[Query Handlers]
+            ReadModels[Read Models/DTOs]
+            ReadDB[(Read Database)]
+        end
+    end
+    
+    CreateCmd --> CommandHandlers
+    UpdateCmd --> CommandHandlers
+    DeleteCmd --> CommandHandlers
+    CommandHandlers --> DomainLogic
+    DomainLogic --> WriteDB
+    
+    GetQuery --> QueryHandlers
+    ListQuery --> QueryHandlers
+    QueryHandlers --> ReadModels
+    ReadModels --> ReadDB
+
+    style CommandHandlers fill:#10b981,stroke:#059669,color:#fff
+    style QueryHandlers fill:#3b82f6,stroke:#2563eb,color:#fff
+    style DomainLogic fill:#ef4444,stroke:#dc2626,color:#fff
+
