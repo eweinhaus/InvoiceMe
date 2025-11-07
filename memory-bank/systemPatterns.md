@@ -17,10 +17,10 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 **Purpose**: Core business logic, rich domain models
 
 **Entities**:
-- `Customer`: Rich domain entity with validation logic
-- `Invoice`: Complex entity with business methods (`calculateTotal()`, `applyPayment()`, `markAsSent()`)
+- ✅ `Customer`: Rich domain entity with validation logic (`validate()`, `updateDetails()`) - **IMPLEMENTED**
+- ✅ `Invoice`: Complex entity with business methods (`calculateTotal()`, `applyPayment()`, `markAsSent()`, `canBeEdited()`, `updateLineItems()`) - **IMPLEMENTED**
 - `Payment`: Entity with payment validation logic
-- `LineItem`: Value object (`@Embeddable`) with `calculateSubtotal()`
+- ✅ `LineItem`: Value object (`@Embeddable`) with `calculateSubtotal()` - **IMPLEMENTED**
 
 **Key Pattern**: Rich domain models with business logic methods, not anemic data containers
 
@@ -30,13 +30,13 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 **Pattern**: Simplified CQRS with service-level separation
 
 **Command Services** (Write Operations):
-- `CustomerCommandService` - Create, Update, Delete
-- `InvoiceCommandService` - Create, Update, Mark as Sent
+- ✅ `CustomerCommandService` - Create, Update, Delete - **IMPLEMENTED**
+- ✅ `InvoiceCommandService` - Create, Update, Mark as Sent - **IMPLEMENTED**
 - `PaymentCommandService` - Record Payment
 
 **Query Services** (Read Operations):
-- `CustomerQueryService` - Get by ID, List all
-- `InvoiceQueryService` - Get by ID, List by status/customer
+- ✅ `CustomerQueryService` - Get by ID, List all - **IMPLEMENTED**
+- ✅ `InvoiceQueryService` - Get by ID, List by status/customer - **IMPLEMENTED**
 - `PaymentQueryService` - Get by ID, List by invoice
 
 **DTOs**: Request/Response DTOs for boundary crossing
@@ -46,7 +46,9 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 **Location**: `src/main/java/com/invoiceme/infrastructure/`
 
 **Components**:
-- **Persistence**: JPA Repositories (to be implemented in feature PRDs)
+- **Persistence**: ✅ `CustomerRepository` (JPA) - **IMPLEMENTED**
+- **Persistence**: ✅ `InvoiceRepository` (JPA with custom query methods) - **IMPLEMENTED**
+- **Persistence**: `PaymentRepository` (to be implemented)
 - **Security**: `SecurityConfig` for OAuth2 and session management (✅ CORS configured, basic security, OAuth deferred to PRD 08)
 - **Config**: `OpenApiConfig` (✅ configured), `CorsConfig` (✅ configured)
 
@@ -54,7 +56,9 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 **Location**: `src/main/java/com/invoiceme/presentation/`
 
 **Components**:
-- **REST Controllers**: `CustomerController`, `InvoiceController`, `PaymentController`, `AuthController` (✅ stubbed with OpenAPI annotations, ready for implementation)
+- **REST Controllers**: ✅ `CustomerController` (fully implemented with all 5 CRUD endpoints) - **COMPLETE**
+- **REST Controllers**: ✅ `InvoiceController` (fully implemented with all 5 endpoints: create, get, list, update, mark as sent) - **COMPLETE**
+- **REST Controllers**: `PaymentController`, `AuthController` (✅ stubbed with OpenAPI annotations, ready for implementation)
 - **Exception Handling**: `GlobalExceptionHandler` with standardized `ErrorResponse` DTO (✅ implemented)
 
 ## Frontend Architecture
@@ -73,10 +77,25 @@ useCustomerViewModel() {
   - Returns data and actions for View
 }
 
+useInvoiceViewModel() {
+  - Uses React Query hooks (useInvoices, useInvoiceMutations)
+  - Manages filter state (status, customer)
+  - Manages pagination state
+  - Conditionally calls query hooks based on filters
+  - Returns data, filters, actions, and setters
+}
+
 // View = Component
 CustomerList() {
   - Uses useCustomerViewModel()
   - Renders UI based on ViewModel data
+}
+
+InvoicesPage() {
+  - Uses useInvoiceViewModel()
+  - Manages dialog state
+  - Renders InvoiceList, InvoiceForm, InvoiceDetails
+  - Handles filter changes and actions
 }
 ```
 
@@ -93,15 +112,15 @@ features/customers/
 ```
 
 **Features**:
-- `customers/` - Customer management
-- `invoices/` - Invoice management
-- `payments/` - Payment management
+- ✅ `customers/` - Customer management (Backend + Frontend COMPLETE)
+- ✅ `invoices/` - Invoice management (Backend + Frontend COMPLETE)
+- `payments/` - Payment management (to be implemented)
 
 ### Shared Components
 **Location**: `src/components/`
 
-- `ui/` - shadcn/ui components (structure ready, components can be added via CLI)
-- `layout/` - Layout component with Header (✅ implemented)
+- `ui/` - shadcn/ui components (Badge, Button, Card, Dialog, Form, Input, Label, Select, Table)
+- `layout/` - Layout component with Header and Navigation (✅ implemented with active state)
 - `common/` - LoadingSpinner (✅), ErrorMessage (✅), Pagination (✅)
 
 ## Key Design Patterns

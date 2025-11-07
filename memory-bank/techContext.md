@@ -122,10 +122,10 @@ VITE_GOOGLE_CLIENT_ID=your-client-id
 ## Dependencies and Tools
 
 ### Backend Key Dependencies
-- MapStruct + Lombok: Eliminate boilerplate mapper code
-- Flyway: Version-controlled database migrations
-- SpringDoc OpenAPI: Auto-generated API documentation
-- Testcontainers: Real database for integration tests
+- MapStruct + Lombok: Eliminate boilerplate mapper code (✅ CustomerMapper implemented)
+- Flyway: Version-controlled database migrations (✅ V2 migration created)
+- SpringDoc OpenAPI: Auto-generated API documentation (✅ Customer endpoints documented)
+- Testcontainers: Real database for integration tests (✅ CustomerIntegrationTest created)
 
 ### Frontend Key Dependencies
 - React Query: Server state management with optimistic updates
@@ -151,6 +151,13 @@ npm run build  # Creates dist/ folder
 - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html` (✅ accessible)
 - **OpenAPI Spec**: `http://localhost:8080/v3/api-docs` (✅ accessible)
 - **H2 Console**: `http://localhost:8080/h2-console` (✅ accessible)
+
+### Testing Infrastructure
+- **Docker**: Used for Java 17 testing environment
+- **Testcontainers**: PostgreSQL container for integration tests
+- **Integration Tests**: CustomerIntegrationTest with 15 test scenarios
+- **Performance Testing**: Automated endpoint testing scripts
+- **Test Results**: All Customer endpoints validated < 200ms response time
 
 ## Development Tools
 

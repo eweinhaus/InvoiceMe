@@ -1,0 +1,41 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - heading "InvoiceMe" [level=1] [ref=e7]
+        - navigation [ref=e8]:
+          - link "Home" [ref=e9] [cursor=pointer]:
+            - /url: /
+          - link "Customers" [ref=e10] [cursor=pointer]:
+            - /url: /customers
+          - link "Invoices" [ref=e11] [cursor=pointer]:
+            - /url: /invoices
+          - link "Payments" [ref=e12] [cursor=pointer]:
+            - /url: /payments
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - heading "Invoices" [level=1] [ref=e16]
+          - button "Create new invoice" [ref=e17] [cursor=pointer]: Create Invoice
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]: Status
+            - combobox "Filter by status" [ref=e21] [cursor=pointer]:
+              - generic: All
+              - img [ref=e22]
+          - generic [ref=e24]:
+            - generic [ref=e25]: Customer
+            - combobox "Filter by customer" [ref=e26] [cursor=pointer]:
+              - generic: All Customers
+              - img [ref=e27]
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: No invoices found
+          - paragraph [ref=e31]: Create your first invoice to get started
+  - generic [ref=e32]:
+    - img [ref=e34]
+    - button "Open Tanstack query devtools" [ref=e82] [cursor=pointer]:
+      - img [ref=e83]
+```

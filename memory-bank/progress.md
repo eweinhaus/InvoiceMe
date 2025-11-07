@@ -12,7 +12,11 @@
 ✅ **PRD Structure for Parallel Development**
 - **8 PRDs created** in `planning/PRDs/` directory
 - ✅ PRD 01: Foundation & API Contract (COMPLETED)
-- PRDs 02-07: Feature PRDs (ready to start in parallel)
+- ✅ PRD 02: Customer Backend (COMPLETED)
+- ✅ PRD 03: Customer Frontend (COMPLETED)
+- ✅ PRD 04: Invoice Backend (COMPLETED)
+- ✅ PRD 05: Invoice Frontend (COMPLETED)
+- PRDs 06-07: Feature PRDs (ready to start in parallel)
 - PRD 08: Authentication & Integration (requires all features)
 - **Key Strategy**: Frontend PRDs can start immediately after PRD 01 using mock data
 - **Maximum Parallelism**: All 6 feature PRDs can run simultaneously
@@ -74,48 +78,55 @@
 - [x] Controller stubs with OpenAPI annotations (Customer, Invoice, Payment, Auth)
 
 #### Domain Layer
-- [ ] Customer entity (rich domain model)
-- [ ] Invoice entity (rich domain model with line items)
+- [x] Customer entity (rich domain model) ✅ COMPLETE
+- [x] Invoice entity (rich domain model with line items) ✅ COMPLETE
 - [ ] Payment entity (rich domain model)
-- [ ] LineItem value object (@Embeddable)
-- [ ] InvoiceStatus enum (DRAFT, SENT, PAID)
+- [x] LineItem value object (@Embeddable) ✅ COMPLETE
+- [x] InvoiceStatus enum (DRAFT, SENT, PAID) ✅ COMPLETE
 
 #### Application Layer
-- [ ] CustomerCommandService (create, update, delete)
-- [ ] CustomerQueryService (get by ID, list all)
-- [ ] InvoiceCommandService (create, update, mark as sent)
-- [ ] InvoiceQueryService (get by ID, list by status/customer)
+- [x] CustomerCommandService (create, update, delete) ✅ COMPLETE
+- [x] CustomerQueryService (get by ID, list all) ✅ COMPLETE
+- [x] InvoiceCommandService (create, update, mark as sent) ✅ COMPLETE
+- [x] InvoiceQueryService (get by ID, list by status/customer) ✅ COMPLETE
 - [ ] PaymentCommandService (record payment)
 - [ ] PaymentQueryService (get by ID, list by invoice)
-- [ ] DTOs (Request/Response for all entities)
-- [ ] MapStruct mappers (CustomerMapper, InvoiceMapper, PaymentMapper)
+- [x] Customer DTOs (CustomerRequest, CustomerResponse) ✅ COMPLETE
+- [x] CustomerMapper (MapStruct) ✅ COMPLETE
+- [x] Invoice DTOs (CreateInvoiceRequest, UpdateInvoiceRequest, InvoiceResponse, LineItemRequest, LineItemResponse) ✅ COMPLETE
+- [x] InvoiceMapper (MapStruct) ✅ COMPLETE
+- [ ] Payment DTOs and Mapper
 
 #### Infrastructure Layer
-- [ ] CustomerRepository (JPA)
-- [ ] InvoiceRepository (JPA)
+- [x] CustomerRepository (JPA) ✅ COMPLETE
+- [x] InvoiceRepository (JPA) ✅ COMPLETE
 - [ ] PaymentRepository (JPA)
 - [x] SecurityConfig (CORS configured, basic security, OAuth deferred)
 - [x] OpenApiConfig
 - [x] CorsConfig
 
 #### Presentation Layer
-- [x] CustomerController (REST endpoints - stubbed with OpenAPI annotations)
-- [x] InvoiceController (REST endpoints - stubbed with OpenAPI annotations)
+- [x] CustomerController (REST endpoints - fully implemented) ✅ COMPLETE
+- [x] InvoiceController (REST endpoints - fully implemented) ✅ COMPLETE
 - [x] PaymentController (REST endpoints - stubbed with OpenAPI annotations)
 - [x] AuthController (user info endpoint - stubbed)
 - [x] GlobalExceptionHandler
 
 #### Database
 - [x] Flyway migration structure ready (V1__init.sql placeholder created)
-- [ ] Flyway migrations for feature schemas (V2-V4 for customers, invoices, payments)
-- [ ] Database schema (customers, invoices, invoice_line_items, payments)
+- [x] V2__create_customers_table.sql ✅ COMPLETE
+- [x] V3__create_invoices_table.sql ✅ COMPLETE
+- [ ] Flyway migrations for payments (V4)
+- [x] Database schema (customers table ✅ complete)
+- [x] Database schema (invoices, invoice_line_items tables ✅ complete)
+- [ ] Database schema (payments table)
 
 #### Testing
-- [ ] Integration tests with Testcontainers
-- [ ] Customer CRUD tests
-- [ ] Invoice lifecycle tests
+- [x] Integration tests with Testcontainers (base class ✅ complete)
+- [x] Customer CRUD tests ✅ COMPLETE (16 test scenarios, all passing)
+- [x] Customer performance tests (< 200ms verified) ✅ COMPLETE
+- [x] Invoice lifecycle tests ✅ COMPLETE (comprehensive test coverage)
 - [ ] Payment flow tests
-- [ ] Performance tests (< 200ms verification)
 
 ### Frontend (React + TypeScript)
 
@@ -131,36 +142,38 @@
 - [x] Type generation from OpenAPI spec
 
 #### Shared Components
-- [x] Layout components (Layout with Header)
+- [x] Layout components (Layout with Header and Navigation)
 - [x] Common components (LoadingSpinner, ErrorMessage)
 - [x] Pagination component
-- [x] shadcn/ui structure ready (components can be added via CLI: `npx shadcn-ui@latest add [component]`)
+- [x] shadcn/ui components (Badge, Button, Card, Dialog, Form, Input, Label, Select, Table)
+- [x] Navigation bar with active state highlighting
 
 #### Features
 
-**Customers**
-- [ ] CustomerList component
-- [ ] CustomerForm component
-- [ ] CustomerCard component
-- [ ] CustomerDeleteDialog component
-- [ ] CustomersPage component
-- [ ] useCustomers hook (React Query)
-- [ ] useCustomerMutations hook (React Query)
-- [ ] useCustomerViewModel hook (ViewModel)
-- [ ] Customer types
+**Customers** ✅ COMPLETE (PRD 03)
+- [x] CustomerList component
+- [x] CustomerForm component
+- [x] CustomerDeleteDialog component
+- [x] CustomersPage component
+- [x] useCustomers hook (React Query)
+- [x] useCustomerMutations hook (React Query)
+- [x] useCustomerViewModel hook (ViewModel)
+- [x] Customer types
+- [x] Customer API client methods
 
-**Invoices**
-- [ ] InvoiceList component
-- [ ] InvoiceForm component
-- [ ] InvoiceCard component
-- [ ] LineItemForm component
-- [ ] InvoiceStatusBadge component
-- [ ] InvoiceDetails component
-- [ ] InvoicesPage component
-- [ ] useInvoices hook (React Query)
-- [ ] useInvoiceMutations hook (React Query)
-- [ ] useInvoiceViewModel hook (ViewModel)
-- [ ] Invoice types
+**Invoices** ✅ COMPLETE (PRD 05)
+- [x] InvoiceList component (table with pagination, status badges, conditional actions)
+- [x] InvoiceForm component (create/edit with React Hook Form + Zod, dynamic line items)
+- [x] LineItemForm component (individual line item with real-time subtotal calculation)
+- [x] InvoiceStatusBadge component (color-coded status display)
+- [x] InvoiceDetails component (modal with full invoice details, line items, balance)
+- [x] InvoicesPage component (main page with filters, dialogs, customer integration)
+- [x] useInvoices hook (React Query - 4 query hooks: all, by status, by customer, by ID)
+- [x] useInvoiceMutations hook (React Query - 3 mutation hooks: create, update, mark as sent)
+- [x] useInvoiceViewModel hook (ViewModel - filter state, pagination, business logic)
+- [x] Invoice types (InvoiceStatus enum, Invoice, LineItem, request/response types)
+- [x] Invoice API client methods (7 methods: get, filter, create, update, mark as sent)
+- [x] Navigation added to Layout component (Home, Customers, Invoices, Payments links)
 
 **Payments**
 - [ ] PaymentList component
@@ -185,27 +198,65 @@
 - [ ] Optimistic updates (React Query) - to be implemented in feature PRDs
 
 #### UI/UX
-- [ ] Responsive design
-- [ ] Loading states
-- [ ] Error states
-- [ ] Success confirmations
-- [ ] Form validation
-- [ ] Toast notifications
+- [x] Responsive design (Customer and Invoice features)
+- [x] Loading states (spinners during API calls)
+- [x] Error states (error messages displayed)
+- [x] Success confirmations (console logs, can be upgraded to toast)
+- [x] Form validation (Zod schemas for Customer and Invoice forms)
+- [ ] Toast notifications (using console.log for now, can be improved in PRD 08)
 
 ## Current Status
 
-**Phase**: ✅ PRD 01 Foundation Complete - Ready for Feature Development
+**Phase**: ✅ Customer & Invoice Complete (Backend + Frontend) - Payment Features In Progress
 
-**Completed Milestone**: PRD 01 - Foundation & API Contract
-- Backend and frontend projects initialized and running
-- All infrastructure components in place
-- API contract defined and type generation working
-- Both applications verified and operational
+**Completed Milestones**:
+- ✅ PRD 01 - Foundation & API Contract
+  - Backend and frontend projects initialized and running
+  - All infrastructure components in place
+  - API contract defined and type generation working
+  - Both applications verified and operational
+- ✅ PRD 02 - Customer Backend
+  - Customer domain entity with rich behavior (`validate()`, `updateDetails()`)
+  - CQRS implementation (CustomerCommandService, CustomerQueryService)
+  - Full CRUD REST API endpoints (POST, GET, PUT, DELETE)
+  - Database migration (V2__create_customers_table.sql)
+  - Integration tests (15 test scenarios)
+  - Performance validated (< 200ms for all endpoints)
+  - Tested with Java 17 via Docker
+- ✅ PRD 03 - Customer Frontend
+  - Complete Customer feature implementation
+  - MVVM pattern implemented with ViewModel hook
+  - Full CRUD operations with React Query
+  - Form validation with Zod
+  - Responsive UI components
+  - Integrated with routing
+- ✅ PRD 04 - Invoice Backend
+  - Invoice domain entity with rich behavior (calculateTotal, markAsSent, applyPayment, etc.)
+  - LineItem embeddable value object with calculateSubtotal
+  - InvoiceStatus enum (DRAFT, SENT, PAID)
+  - CQRS implementation (InvoiceCommandService, InvoiceQueryService)
+  - Full REST API endpoints (create, get, list, update, mark as sent)
+  - Database migration (V3__create_invoices_table.sql)
+  - Comprehensive integration tests
+  - All tests passing
+- ✅ PRD 05 - Invoice Frontend
+  - Complete Invoice feature implementation
+  - MVVM pattern with ViewModel hook (useInvoiceViewModel)
+  - Invoice lifecycle management (Draft → Sent → Paid)
+  - Line items support with dynamic forms (useFieldArray from React Hook Form)
+  - Real-time total calculation (subtotals and grand total)
+  - Status filtering (All, Draft, Sent, Paid)
+  - Customer filtering (All Customers + specific customer)
+  - Combined filtering (status + customer)
+  - Invoice details view (modal with line items, balance info)
+  - Form validation with Zod (customer, line items, quantities, prices)
+  - Integrated with routing (/invoices)
+  - Navigation bar added to Layout for easy access
 
-**Next Milestone**: Feature Development (PRDs 02-07)
-- Can run in parallel after PRD 01
-- Frontend PRDs (03, 05, 07) can start immediately with mock data
-- Backend PRDs (02, 04, 06) can run independently
+**Next Milestones**: Feature Development (PRDs 06-07)
+- Can run in parallel
+- Frontend PRD (07) can start immediately with mock data
+- Backend PRDs (04, 06) can run independently
 - Final integration in PRD 08 requires all features complete
 
 **Development Strategy**: Parallel development enabled via PRD structure
