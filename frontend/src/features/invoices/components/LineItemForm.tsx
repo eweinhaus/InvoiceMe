@@ -55,9 +55,9 @@ export function LineItemForm({
   }
 
   return (
-    <div className="grid grid-cols-12 gap-4 items-end p-4 border rounded-lg">
-      <div className="col-span-12 md:col-span-5">
-        <Label htmlFor={`description-${index}`}>
+    <div className="grid grid-cols-12 gap-4 items-start p-4 border rounded-lg">
+      <div className="col-span-12 md:col-span-4 flex flex-col">
+        <Label htmlFor={`description-${index}`} className="mb-1.5">
           Description <span className="text-destructive">*</span>
         </Label>
         <Input
@@ -78,8 +78,8 @@ export function LineItemForm({
         )}
       </div>
 
-      <div className="col-span-6 md:col-span-2">
-        <Label htmlFor={`quantity-${index}`}>
+      <div className="col-span-6 md:col-span-2 flex flex-col">
+        <Label htmlFor={`quantity-${index}`} className="mb-1.5">
           Quantity <span className="text-destructive">*</span>
         </Label>
         <Input
@@ -101,8 +101,8 @@ export function LineItemForm({
         )}
       </div>
 
-      <div className="col-span-6 md:col-span-2">
-        <Label htmlFor={`unitPrice-${index}`}>
+      <div className="col-span-6 md:col-span-2 flex flex-col">
+        <Label htmlFor={`unitPrice-${index}`} className="mb-1.5">
           Unit Price <span className="text-destructive">*</span>
         </Label>
         <Input
@@ -124,20 +124,22 @@ export function LineItemForm({
         )}
       </div>
 
-      <div className="col-span-12 md:col-span-2">
-        <Label>Subtotal</Label>
-        <div className="h-10 px-3 py-2 border rounded-md bg-muted flex items-center">
+      <div className="col-span-12 md:col-span-2 flex flex-col">
+        <Label className="mb-1.5">Subtotal</Label>
+        <div className="h-9 px-3 border rounded-md bg-gray-50 flex items-center">
           {formatCurrency(subtotal)}
         </div>
       </div>
 
-      <div className="col-span-12 md:col-span-1">
+      <div className="col-span-12 md:col-span-2 flex flex-col">
+        <Label className="mb-1.5 invisible">Remove</Label>
         <Button
           type="button"
           variant="outline"
           onClick={() => onRemove(index)}
           disabled={!canRemove}
           aria-label={`Remove line item ${index + 1}`}
+          className="h-9 w-full"
         >
           Remove
         </Button>

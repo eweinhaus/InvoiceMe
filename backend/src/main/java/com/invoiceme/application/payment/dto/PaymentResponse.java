@@ -14,6 +14,9 @@ public record PaymentResponse(
         @Schema(description = "Invoice ID", example = "550e8400-e29b-41d4-a716-446655440000")
         UUID invoiceId,
         
+        @Schema(description = "Invoice number", example = "INV-2024-001")
+        String invoiceNumber,
+        
         @Schema(description = "Payment amount", example = "500.00")
         BigDecimal amount,
         

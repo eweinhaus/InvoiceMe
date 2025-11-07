@@ -16,8 +16,9 @@
 - ✅ PRD 03: Customer Frontend (COMPLETED)
 - ✅ PRD 04: Invoice Backend (COMPLETED)
 - ✅ PRD 05: Invoice Frontend (COMPLETED)
-- PRDs 06-07: Feature PRDs (ready to start in parallel)
-- PRD 08: Authentication & Integration (requires all features)
+- ✅ PRD 06: Payment Backend (COMPLETED - November 7, 2024)
+- ✅ PRD 07: Payment Frontend (COMPLETED - December 2024)
+- PRD 08: Authentication & Integration (ready to start - requires all features)
 - **Key Strategy**: Frontend PRDs can start immediately after PRD 01 using mock data
 - **Maximum Parallelism**: All 6 feature PRDs can run simultaneously
 - See `planning/PRDs/README.md` for detailed parallelization strategy
@@ -80,7 +81,7 @@
 #### Domain Layer
 - [x] Customer entity (rich domain model) ✅ COMPLETE
 - [x] Invoice entity (rich domain model with line items) ✅ COMPLETE
-- [ ] Payment entity (rich domain model)
+- [x] Payment entity (rich domain model) ✅ COMPLETE
 - [x] LineItem value object (@Embeddable) ✅ COMPLETE
 - [x] InvoiceStatus enum (DRAFT, SENT, PAID) ✅ COMPLETE
 
@@ -89,18 +90,19 @@
 - [x] CustomerQueryService (get by ID, list all) ✅ COMPLETE
 - [x] InvoiceCommandService (create, update, mark as sent) ✅ COMPLETE
 - [x] InvoiceQueryService (get by ID, list by status/customer) ✅ COMPLETE
-- [ ] PaymentCommandService (record payment)
-- [ ] PaymentQueryService (get by ID, list by invoice)
+- [x] PaymentCommandService (record payment) ✅ COMPLETE
+- [x] PaymentQueryService (get by ID, list by invoice) ✅ COMPLETE
 - [x] Customer DTOs (CustomerRequest, CustomerResponse) ✅ COMPLETE
 - [x] CustomerMapper (MapStruct) ✅ COMPLETE
 - [x] Invoice DTOs (CreateInvoiceRequest, UpdateInvoiceRequest, InvoiceResponse, LineItemRequest, LineItemResponse) ✅ COMPLETE
 - [x] InvoiceMapper (MapStruct) ✅ COMPLETE
-- [ ] Payment DTOs and Mapper
+- [x] Payment DTOs (PaymentRequest, PaymentResponse) ✅ COMPLETE
+- [x] PaymentMapper (MapStruct) ✅ COMPLETE
 
 #### Infrastructure Layer
 - [x] CustomerRepository (JPA) ✅ COMPLETE
 - [x] InvoiceRepository (JPA) ✅ COMPLETE
-- [ ] PaymentRepository (JPA)
+- [x] PaymentRepository (JPA) ✅ COMPLETE
 - [x] SecurityConfig (CORS configured, basic security, OAuth deferred)
 - [x] OpenApiConfig
 - [x] CorsConfig
@@ -108,7 +110,7 @@
 #### Presentation Layer
 - [x] CustomerController (REST endpoints - fully implemented) ✅ COMPLETE
 - [x] InvoiceController (REST endpoints - fully implemented) ✅ COMPLETE
-- [x] PaymentController (REST endpoints - stubbed with OpenAPI annotations)
+- [x] PaymentController (REST endpoints - fully implemented) ✅ COMPLETE
 - [x] AuthController (user info endpoint - stubbed)
 - [x] GlobalExceptionHandler
 
@@ -116,17 +118,17 @@
 - [x] Flyway migration structure ready (V1__init.sql placeholder created)
 - [x] V2__create_customers_table.sql ✅ COMPLETE
 - [x] V3__create_invoices_table.sql ✅ COMPLETE
-- [ ] Flyway migrations for payments (V4)
+- [x] V4__create_payments_table.sql ✅ COMPLETE
 - [x] Database schema (customers table ✅ complete)
 - [x] Database schema (invoices, invoice_line_items tables ✅ complete)
-- [ ] Database schema (payments table)
+- [x] Database schema (payments table ✅ complete)
 
 #### Testing
 - [x] Integration tests with Testcontainers (base class ✅ complete)
 - [x] Customer CRUD tests ✅ COMPLETE (16 test scenarios, all passing)
 - [x] Customer performance tests (< 200ms verified) ✅ COMPLETE
 - [x] Invoice lifecycle tests ✅ COMPLETE (comprehensive test coverage)
-- [ ] Payment flow tests
+- [x] Payment flow tests ✅ COMPLETE (PaymentIntegrationTest with comprehensive scenarios)
 
 ### Frontend (React + TypeScript)
 
@@ -175,15 +177,17 @@
 - [x] Invoice API client methods (7 methods: get, filter, create, update, mark as sent)
 - [x] Navigation added to Layout component (Home, Customers, Invoices, Payments links)
 
-**Payments**
-- [ ] PaymentList component
-- [ ] PaymentForm component
-- [ ] InvoiceSelector component
-- [ ] PaymentsPage component
-- [ ] usePayments hook (React Query)
-- [ ] usePaymentMutations hook (React Query)
-- [ ] usePaymentViewModel hook (ViewModel)
-- [ ] Payment types
+**Payments** ✅ COMPLETE (PRD 07)
+- [x] PaymentList component (table with pagination, payment details)
+- [x] PaymentForm component (React Hook Form + Zod, real-time balance validation)
+- [x] InvoiceSelector component (dropdown for eligible invoices)
+- [x] PaymentsPage component (main page with filters, dialogs)
+- [x] usePayments hook (React Query - 3 query hooks: all, by invoice, by ID)
+- [x] usePaymentMutations hook (React Query - recordPayment with query invalidation)
+- [x] usePaymentViewModel hook (ViewModel - filter state, pagination, business logic)
+- [x] Payment types (Payment, PaymentRequest, PaymentResponse, Page<Payment>)
+- [x] Payment API client methods (4 methods: getPayments, getPaymentsByInvoice, getPaymentById, recordPayment)
+- [x] InvoiceDetails enhancement (payment history, "Record Payment" button)
 
 #### Authentication
 - [ ] Login page
@@ -207,7 +211,7 @@
 
 ## Current Status
 
-**Phase**: ✅ Customer & Invoice Complete (Backend + Frontend) - Payment Features In Progress
+**Phase**: ✅ Customer, Invoice & Payment Complete (Backend + Frontend) - Authentication Remaining
 
 **Completed Milestones**:
 - ✅ PRD 01 - Foundation & API Contract
@@ -252,12 +256,34 @@
   - Form validation with Zod (customer, line items, quantities, prices)
   - Integrated with routing (/invoices)
   - Navigation bar added to Layout for easy access
+- ✅ PRD 06 - Payment Backend
+  - Payment domain entity with rich behavior (validateAmount, applyToInvoice)
+  - CQRS implementation (PaymentCommandService, PaymentQueryService)
+  - Full REST API endpoints (POST /api/payments, GET /api/payments/{id}, GET /api/payments)
+  - Database migration (V4__create_payments_table.sql)
+  - Invoice balance calculation integration (InvoiceQueryService updated)
+  - PaymentIntegrationTest with comprehensive test scenarios
+  - Payment validation (amount > 0, amount <= invoice balance)
+  - Payment updates invoice balance and transitions to PAID when balance = 0
+  - Full flow integration test (Customer → Invoice → Payment)
+- ✅ PRD 07 - Payment Frontend
+  - Complete Payment feature implementation
+  - MVVM pattern with ViewModel hook (usePaymentViewModel)
+  - Payment recording with real-time balance validation
+  - Invoice selector showing only eligible invoices (SENT/PAID with balance > 0)
+  - Real-time remaining balance calculation as amount is entered
+  - Payment list with pagination and invoice filtering
+  - InvoiceDetails component enhanced with payment history
+  - "Record Payment" button in InvoiceDetails (only shows if balance > 0)
+  - Form validation with Zod (dynamic schema based on invoice balance)
+  - Integrated with routing (/payments)
+  - Query invalidation for both payments and invoices after recording
 
-**Next Milestones**: Feature Development (PRDs 06-07)
-- Can run in parallel
-- Frontend PRD (07) can start immediately with mock data
-- Backend PRDs (04, 06) can run independently
-- Final integration in PRD 08 requires all features complete
+**Next Milestones**: Authentication & Integration (PRD 08)
+- Requires all features complete for final integration testing
+- Google OAuth2 implementation
+- Protected routes
+- E2E integration testing
 
 **Development Strategy**: Parallel development enabled via PRD structure
 - ✅ PRD 01 complete - foundation ready

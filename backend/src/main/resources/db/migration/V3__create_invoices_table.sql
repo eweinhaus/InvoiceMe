@@ -1,6 +1,6 @@
 -- Create invoices table
 CREATE TABLE invoices (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE RESTRICT,
     status VARCHAR(20) NOT NULL CHECK (status IN ('DRAFT', 'SENT', 'PAID')),
     total_amount DECIMAL(19,2) NOT NULL DEFAULT 0,

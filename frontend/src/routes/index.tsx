@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import CustomersPage from '../features/customers/pages/CustomersPage'
 import { InvoicesPage } from '../features/invoices/pages/InvoicesPage'
+import { PaymentsPage } from '../features/payments/pages/PaymentsPage'
 import { Button } from '../components/ui/button'
 
 // Placeholder components
@@ -25,7 +26,6 @@ const HomePage = () => (
   </div>
 )
 const LoginPage = () => <div className="text-center py-12">Login (PRD 08)</div>
-const PaymentsPage = () => <div className="text-center py-12">Payments (PRD 07)</div>
 
 export default function AppRoutes() {
   return (

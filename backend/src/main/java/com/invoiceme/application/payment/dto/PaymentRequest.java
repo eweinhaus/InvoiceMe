@@ -20,6 +20,7 @@ public record PaymentRequest(
         @Schema(description = "Payment amount", example = "500.00")
         BigDecimal amount,
         
+        @NotNull(message = "Payment date is required")
         @PastOrPresent(message = "Payment date cannot be in the future")
         @Schema(description = "Payment date", example = "2024-01-15T10:30:00")
         LocalDateTime paymentDate
