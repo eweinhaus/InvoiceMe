@@ -3,6 +3,8 @@ import Layout from '../components/layout/Layout'
 import CustomersPage from '../features/customers/pages/CustomersPage'
 import { InvoicesPage } from '../features/invoices/pages/InvoicesPage'
 import { PaymentsPage } from '../features/payments/pages/PaymentsPage'
+import LoginPage from '../pages/LoginPage'
+import ProtectedRoute from '../components/common/ProtectedRoute'
 import { Button } from '../components/ui/button'
 
 // Placeholder components
@@ -25,7 +27,6 @@ const HomePage = () => (
     </div>
   </div>
 )
-const LoginPage = () => <div className="text-center py-12">Login (PRD 08)</div>
 
 export default function AppRoutes() {
   return (
@@ -34,9 +35,30 @@ export default function AppRoutes() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
-          <Route path="customers" element={<CustomersPage />} />
-          <Route path="invoices" element={<InvoicesPage />} />
-          <Route path="payments" element={<PaymentsPage />} />
+          <Route
+            path="customers"
+            element={
+              <ProtectedRoute>
+                <CustomersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="invoices"
+            element={
+              <ProtectedRoute>
+                <InvoicesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="payments"
+            element={
+              <ProtectedRoute>
+                <PaymentsPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

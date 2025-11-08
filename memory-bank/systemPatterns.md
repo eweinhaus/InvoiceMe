@@ -49,7 +49,7 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 - **Persistence**: ✅ `CustomerRepository` (JPA) - **IMPLEMENTED**
 - **Persistence**: ✅ `InvoiceRepository` (JPA with custom query methods) - **IMPLEMENTED**
 - **Persistence**: `PaymentRepository` (to be implemented)
-- **Security**: `SecurityConfig` for OAuth2 and session management (✅ CORS configured, basic security, OAuth deferred to PRD 08)
+- **Security**: `SecurityConfig` for OAuth2 and session management (✅ CORS configured, OAuth2 ready), `DevAuthConfig` for dev mode authentication (✅ implemented)
 - **Config**: `OpenApiConfig` (✅ configured), `CorsConfig` (✅ configured)
 
 ### Presentation Layer
@@ -58,7 +58,8 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 **Components**:
 - **REST Controllers**: ✅ `CustomerController` (fully implemented with all 5 CRUD endpoints) - **COMPLETE**
 - **REST Controllers**: ✅ `InvoiceController` (fully implemented with all 5 endpoints: create, get, list, update, mark as sent) - **COMPLETE**
-- **REST Controllers**: `PaymentController`, `AuthController` (✅ stubbed with OpenAPI annotations, ready for implementation)
+- **REST Controllers**: ✅ `PaymentController` (fully implemented) - **COMPLETE**
+- **REST Controllers**: ✅ `AuthController` (fully implemented with login, logout, user info endpoints) - **COMPLETE**
 - **Exception Handling**: `GlobalExceptionHandler` with standardized `ErrorResponse` DTO (✅ implemented)
 
 ## Frontend Architecture
@@ -199,6 +200,7 @@ Page Component → ViewModel Hook → React Query → Axios → API
 ### Frontend State
 - **Server State**: React Query (caching, invalidation, optimistic updates)
 - **Client State**: React state / Zustand (UI state, modals, filters)
+- **Authentication State**: React Query via `useAuth` hook (user info, authentication status)
 
 ## Error Handling Pattern
 
@@ -208,9 +210,10 @@ Page Component → ViewModel Hook → React Query → Axios → API
 - HTTP status codes: 400, 401, 403, 404, 422, 500
 
 ### Frontend
-- Axios interceptor for 401 → redirect to login
+- Axios interceptor for 401 → redirect to login (clears React Query cache)
 - React Query error handling with toast notifications
 - Error Boundary for component errors
+- Authentication error handling (OAuth errors, session expiration)
 
 ## Parallel Development Patterns
 

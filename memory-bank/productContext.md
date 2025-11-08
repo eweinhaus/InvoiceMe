@@ -76,8 +76,11 @@ InvoiceMe is designed as an assessment project to evaluate a candidate's ability
 - View payments by invoice
 - Automatic balance updates on invoice
 
-### Authentication
-- Google OAuth2 sign-in
+### Authentication ✅ COMPLETE
+- Dev mode authentication (form-based login for development)
+- Google OAuth2 sign-in (ready, can be enabled with credentials)
 - Session-based authentication (httpOnly cookies)
 - Protected routes requiring authentication
+- User display in header
+- Login/logout functionality
 

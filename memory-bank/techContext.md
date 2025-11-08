@@ -65,10 +65,20 @@
 ## Development Setup
 
 ### Backend Setup
-1. **Java 17+** required
+1. **Java 17** required (LTS, project target version)
+   - **Installation**: `brew install openjdk@17` (macOS)
+   - **JAVA_HOME Configuration**: Set in `~/.zshrc`:
+     ```bash
+     export JAVA_HOME=/opt/homebrew/Cellar/openjdk@17/17.0.17/libexec/openjdk.jdk/Contents/Home
+     export PATH="$JAVA_HOME/bin:$PATH"
+     ```
+   - **Verification**: `java -version` should show Java 17.x.x
+   - **Maven Integration**: Maven automatically uses JAVA_HOME
+   - **Note**: Java 25+ has compatibility issues with Maven compiler plugin 3.13.0
 2. **Maven** for dependency management
 3. **H2** for local development (in-memory)
 4. **PostgreSQL** for testing (via Testcontainers)
+5. **Docker** required for Testcontainers (PostgreSQL containers)
 
 ### Frontend Setup
 1. **Node.js** (LTS version)
@@ -110,9 +120,11 @@ VITE_GOOGLE_CLIENT_ID=your-client-id
 - **Production**: PostgreSQL on AWS RDS (documented, optional)
 
 ### Authentication Constraints
-- **OAuth2**: Google OAuth2 only
+- **OAuth2**: Google OAuth2 (ready, can be enabled with credentials)
+- **Dev Mode**: Form-based authentication for development (default)
 - **Session-Based**: httpOnly cookies (no JWT)
-- **CORS**: Must be configured for frontend origin
+- **CORS**: Must be configured for frontend origin (✅ configured)
+- **Environment**: `USE_DEV_AUTH=true` enables dev mode, `false` enables OAuth2
 
 ### Type Safety Constraints
 - **Backend**: Java types with validation
@@ -146,18 +158,34 @@ npm run build  # Creates dist/ folder
 ```
 
 ### Development Servers
-- **Backend**: `http://localhost:8080` (✅ running)
+- **Backend**: `http://localhost:8080` (✅ running in Docker with Java 17)
 - **Frontend**: `http://localhost:5173` (✅ running, Vite default)
 - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html` (✅ accessible)
 - **OpenAPI Spec**: `http://localhost:8080/v3/api-docs` (✅ accessible)
 - **H2 Console**: `http://localhost:8080/h2-console` (✅ accessible)
+- **Login Page**: `http://localhost:5173/login` (✅ accessible)
 
 ### Testing Infrastructure
-- **Docker**: Used for Java 17 testing environment
+- **Docker**: Required for Testcontainers (PostgreSQL containers)
 - **Testcontainers**: PostgreSQL container for integration tests
-- **Integration Tests**: CustomerIntegrationTest with 15 test scenarios
+  - Uses `BaseIntegrationTest` with `@Testcontainers` annotation
+  - Static PostgreSQLContainer shared across test classes
+  - Note: When running all tests together, some tests may timeout if containers are cleaned up between test classes
+  - Best practice: Run test classes individually or ensure Docker has sufficient resources
+- **Integration Tests**: 
+  - CustomerIntegrationTest: 16 test scenarios (all passing)
+  - InvoiceIntegrationTest: Comprehensive test coverage
+  - PaymentIntegrationTest: Comprehensive test scenarios
+  - DatabaseConnectionTest: 1 test (passing)
+- **Authentication Tests**: Comprehensive test suite (18 scenarios, all passing)
+  - Authentication endpoints (login, logout, user info)
+  - Protected endpoints access
+  - Complete customer, invoice, and payment flows with authentication
+  - Performance validation (< 200ms for all endpoints)
 - **Performance Testing**: Automated endpoint testing scripts
-- **Test Results**: All Customer endpoints validated < 200ms response time
+- **Test Results**: All endpoints validated < 200ms response time
+- **Compilation**: Maven compilation works with Java 17 (resolved Java 25 compatibility issue)
+- **Docker**: Backend runs in Docker container with Java 17 for consistent environment
 
 ## Development Tools
 
