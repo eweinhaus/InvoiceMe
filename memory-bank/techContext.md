@@ -22,6 +22,7 @@
 - **MapStruct**: DTO mapping (annotation processor)
 - **Lombok**: Boilerplate reduction
 - **SpringDoc OpenAPI**: API documentation (Swagger)
+- **dotenv-java**: Environment variable loading from .env files (version 3.0.0)
 
 #### Development Tools
 - **Testcontainers**: Integration testing with real PostgreSQL
@@ -100,7 +101,17 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
+app:
+  auth:
+    dev-mode: false  # Set to false to enable OAuth2
 ```
+
+**Dotenv Configuration**:
+- `DotenvConfig.java` - Spring configuration bean for loading .env files
+- `InvoiceMeApplication.java` - Loads .env before Spring Boot starts and sets system properties
+- Environment variables from `.env` file are available to `application.yml` via `${VARIABLE_NAME}` syntax
+- `.env` file should be in the backend directory root
+- Uses `dotenv-java` library (version 3.0.0)
 
 #### Frontend (`.env`)
 ```env
@@ -121,10 +132,11 @@ VITE_GOOGLE_CLIENT_ID=your-client-id
 
 ### Authentication Constraints
 - **OAuth2**: Google OAuth2 (ready, can be enabled with credentials)
-- **Dev Mode**: Form-based authentication for development (default)
+- **Dev Mode**: Permissive security configuration (all `/api/**` requests allowed when `app.auth.dev-mode=true`)
 - **Session-Based**: httpOnly cookies (no JWT)
-- **CORS**: Must be configured for frontend origin (✅ configured)
-- **Environment**: `USE_DEV_AUTH=true` enables dev mode, `false` enables OAuth2
+- **CORS**: Must be configured for frontend origin (✅ configured for `http://localhost:5173`)
+- **Environment**: `app.auth.dev-mode=true` enables permissive dev mode, `false` enables OAuth2
+- **Environment Variables**: Loaded via dotenv-java from `.env` file in backend directory
 
 ### Type Safety Constraints
 - **Backend**: Java types with validation
@@ -160,10 +172,17 @@ npm run build  # Creates dist/ folder
 ### Development Servers
 - **Backend**: `http://localhost:8080` (✅ running in Docker with Java 17)
 - **Frontend**: `http://localhost:5173` (✅ running, Vite default)
+- **Home Page/Dashboard**: `http://localhost:5173/` (✅ accessible, shows login if not authenticated)
 - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html` (✅ accessible)
 - **OpenAPI Spec**: `http://localhost:8080/v3/api-docs` (✅ accessible)
 - **H2 Console**: `http://localhost:8080/h2-console` (✅ accessible)
 - **Login Page**: `http://localhost:5173/login` (✅ accessible)
+
+### Development Scripts
+- **restart-backend.sh**: Script to restart backend server
+  - Kills existing process on port 8080
+  - Starts new backend process in background
+  - Logs written to `backend.log`
 
 ### Testing Infrastructure
 - **Docker**: Required for Testcontainers (PostgreSQL containers)

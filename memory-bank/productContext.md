@@ -48,6 +48,8 @@ InvoiceMe is designed as an assessment project to evaluate a candidate's ability
 - **Clear Feedback**: Loading states, error messages, success confirmations
 - **Accessible**: ARIA labels, keyboard navigation
 - **Intuitive**: Clear navigation, consistent UI patterns
+- **Dashboard**: Home page with statistics, recent activity, and quick actions
+- **User Experience**: Personalized welcome message, user avatar in header
 
 ### Backend Experience
 - **Fast API**: < 200ms response times
@@ -77,10 +79,11 @@ InvoiceMe is designed as an assessment project to evaluate a candidate's ability
 - Automatic balance updates on invoice
 
 ### Authentication ✅ COMPLETE
-- Dev mode authentication (form-based login for development)
+- Dev mode authentication (permissive security for development)
 - Google OAuth2 sign-in (ready, can be enabled with credentials)
 - Session-based authentication (httpOnly cookies)
 - Protected routes requiring authentication
-- User display in header
+- User display in header with Avatar component
 - Login/logout functionality
+- Home page dashboard (shows login if not authenticated, dashboard if authenticated)
 

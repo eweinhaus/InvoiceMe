@@ -48,9 +48,9 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 **Components**:
 - **Persistence**: ✅ `CustomerRepository` (JPA) - **IMPLEMENTED**
 - **Persistence**: ✅ `InvoiceRepository` (JPA with custom query methods) - **IMPLEMENTED**
-- **Persistence**: `PaymentRepository` (to be implemented)
-- **Security**: `SecurityConfig` for OAuth2 and session management (✅ CORS configured, OAuth2 ready), `DevAuthConfig` for dev mode authentication (✅ implemented)
-- **Config**: `OpenApiConfig` (✅ configured), `CorsConfig` (✅ configured)
+- **Persistence**: ✅ `PaymentRepository` (JPA) - **IMPLEMENTED**
+- **Security**: `SecurityConfig` for OAuth2 and session management (✅ CORS configured, OAuth2 ready, dev mode permissive)
+- **Config**: `OpenApiConfig` (✅ configured), `CorsConfig` (✅ configured), `DotenvConfig` (✅ configured for .env file loading)
 
 ### Presentation Layer
 **Location**: `src/main/java/com/invoiceme/presentation/`
@@ -59,7 +59,7 @@ Domain Layer (Inner) → Application Layer → Infrastructure Layer → Presenta
 - **REST Controllers**: ✅ `CustomerController` (fully implemented with all 5 CRUD endpoints) - **COMPLETE**
 - **REST Controllers**: ✅ `InvoiceController` (fully implemented with all 5 endpoints: create, get, list, update, mark as sent) - **COMPLETE**
 - **REST Controllers**: ✅ `PaymentController` (fully implemented) - **COMPLETE**
-- **REST Controllers**: ✅ `AuthController` (fully implemented with login, logout, user info endpoints) - **COMPLETE**
+- **REST Controllers**: ✅ `AuthController` (fully implemented with user info and logout endpoints) - **COMPLETE**
 - **Exception Handling**: `GlobalExceptionHandler` with standardized `ErrorResponse` DTO (✅ implemented)
 
 ## Frontend Architecture
@@ -115,14 +115,14 @@ features/customers/
 **Features**:
 - ✅ `customers/` - Customer management (Backend + Frontend COMPLETE)
 - ✅ `invoices/` - Invoice management (Backend + Frontend COMPLETE)
-- `payments/` - Payment management (to be implemented)
+- ✅ `payments/` - Payment management (Backend + Frontend COMPLETE)
 
 ### Shared Components
 **Location**: `src/components/`
 
 - `ui/` - shadcn/ui components (Badge, Button, Card, Dialog, Form, Input, Label, Select, Table)
-- `layout/` - Layout component with Header and Navigation (✅ implemented with active state)
-- `common/` - LoadingSpinner (✅), ErrorMessage (✅), Pagination (✅)
+- `layout/` - Layout component with Header and Navigation (✅ implemented with active state, Avatar integration)
+- `common/` - LoadingSpinner (✅), ErrorMessage (✅), Pagination (✅), Avatar (✅), StatCard (✅), RecentInvoices (✅), RecentPayments (✅)
 
 ## Key Design Patterns
 

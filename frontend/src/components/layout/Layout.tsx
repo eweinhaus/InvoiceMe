@@ -2,6 +2,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { queryClient } from '@/lib/react-query/queryClient'
+import Avatar from '@/components/common/Avatar'
 
 export default function Layout() {
   const location = useLocation()
@@ -14,6 +15,9 @@ export default function Layout() {
     { path: '/invoices', label: 'Invoices' },
     { path: '/payments', label: 'Payments' },
   ]
+
+  // Compute display name explicitly
+  const displayName = user?.name?.trim() || user?.email?.trim() || 'User'
 
   const handleLogout = async () => {
     try {
@@ -42,10 +46,10 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">InvoiceMe</h1>
-            <div className="flex items-center gap-4">
+        <div className="mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-6 overflow-visible">
+            <h1 className="text-2xl font-bold flex-shrink-0">InvoiceMe</h1>
+            <div className="flex items-center gap-4 flex-shrink-0 overflow-visible">
               <nav className="flex gap-2">
                 {navLinks.map((link) => {
                   const isActive = location.pathname === link.path
@@ -61,25 +65,29 @@ export default function Layout() {
                 })}
               </nav>
               {isAuthenticated && user && (
-                <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-                  {user.picture && (
-                    <img
-                      src={user.picture}
-                      alt={user.name || user.email || 'User'}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  )}
-                  <span className="text-sm text-gray-700">
-                    {user.name || user.email}
-                  </span>
-                  <Button
-                    variant="ghost"
+                <div className="flex items-center gap-3 pl-4 border-l border-gray-200 flex-shrink-0" style={{ minWidth: 'fit-content', zIndex: 10 }}>
+                  <Avatar
+                    name={user.name}
+                    email={user.email}
+                    picture={user.picture}
                     size="sm"
+                  />
+                  <span 
+                    className="text-sm whitespace-nowrap flex-shrink-0 font-medium text-gray-700" 
+                    data-testid="username"
+                    style={{ display: 'inline-block' }}
+                  >
+                    {displayName || 'User'}
+                  </span>
+                  <button
                     onClick={handleLogout}
-                    className="text-xs"
+                    className="text-xs whitespace-nowrap flex-shrink-0 px-3 py-1.5 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    data-testid="logout-button"
+                    type="button"
+                    style={{ display: 'inline-block' }}
                   >
                     Logout
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>

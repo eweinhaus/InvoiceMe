@@ -32,6 +32,8 @@ public class SecurityConfig {
                             .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                             .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .requestMatchers("/h2-console/**").permitAll()
+                            .requestMatchers("/api/auth/logout").permitAll() // Allow logout without auth
+                            .requestMatchers("/api/auth/user").authenticated() // Require auth for user info
                             .requestMatchers("/api/**").permitAll() // Permissive for now, will be secured in PRD 08
                             .anyRequest().authenticated()
                     )

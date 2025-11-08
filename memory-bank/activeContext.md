@@ -25,42 +25,45 @@ PRD 01 (Foundation), PRD 02 (Customer Backend), PRD 03 (Customer Frontend), PRD 
 - ✅ Payment feature fully functional (backend + frontend)
 - ✅ Navigation bar added to Layout component
 - ✅ InvoiceDetails component enhanced with payment history and "Record Payment" button
-- ✅ Authentication system fully functional (dev mode)
-- ✅ All API endpoints protected with authentication
+- ✅ Authentication system fully functional (OAuth2 ready, dev mode permissive)
+- ✅ All API endpoints protected with authentication (when OAuth2 enabled)
 - ✅ Protected routes working on frontend
 - ✅ Login/logout functionality working
-- ✅ User display in header
+- ✅ User display in header with Avatar component
 - ✅ Session management working correctly
+- ✅ Home page dashboard with statistics and recent activity
+- ✅ Dotenv configuration for environment variables
+- ✅ Backend restart script for development
 
 ## Recent Changes
 
 ### ✅ PRD 08 Authentication & Integration - COMPLETED (November 7, 2024)
 
 **Authentication Implementation Completed**:
-- ✅ Dev mode authentication (`DevAuthConfig.java`):
-  - Form-based login for development (username/password)
-  - Default credentials: `dev@invoiceme.com` / `dev123`
-  - In-memory user details manager
-  - Session-based authentication with httpOnly cookies
-  - Conditional configuration (enabled when `app.auth.dev-mode=true`)
+- ✅ Dev mode authentication (permissive security):
+  - SecurityConfig allows all `/api/**` requests when `app.auth.dev-mode=true`
+  - No authentication required in dev mode for API endpoints
+  - OAuth2 disabled when dev mode is enabled
+  - Configuration controlled via `app.auth.dev-mode` property in `application.yml`
 - ✅ OAuth2 configuration ready (`SecurityConfig.java`):
   - Google OAuth2 client configuration in `application.yml`
   - Conditional activation (when `app.auth.dev-mode=false`)
-  - OAuth2 auto-configuration excluded when dev mode enabled
+  - OAuth2 login flow configured with success/failure URLs
   - Session management configured
-  - CORS configured for authentication
+  - CORS configured for authentication endpoints (`/oauth2/**`, `/login/**`)
+  - Environment variables loaded via Dotenv (dotenv-java library)
 - ✅ AuthController (`AuthController.java`):
-  - `GET /api/auth/user` - Returns current authenticated user info
-  - `POST /api/auth/login` - API-based login (dev mode)
+  - `GET /api/auth/user` - Returns current authenticated user info (OAuth2User)
   - `POST /api/auth/logout` - Logout and session invalidation
-  - Handles both OAuth2User and UserDetails (dev mode)
+  - Extracts user info from OAuth2User (id, email, name, picture)
+  - Returns UserResponse DTO with user information
 - ✅ UserResponse DTO for user info endpoint
-- ✅ LoginRequest DTO for login endpoint
 - ✅ Frontend LoginPage (`LoginPage.tsx`):
-  - Dev mode form login (username/password)
-  - Google OAuth2 button (disabled when not configured)
-  - Error handling and loading states
-  - Redirects authenticated users away from login
+  - Google OAuth2 sign-in button with Google branding
+  - Redirects to Spring Security OAuth2 authorization endpoint (`/oauth2/authorization/google`)
+  - Error handling for OAuth callback errors (URL parameter detection)
+  - Loading states and authenticated user redirect
+  - Clean UI with centered form layout
 - ✅ useAuth hook (`useAuth.ts`):
   - React Query integration
   - Fetches user info from `/api/auth/user`
@@ -75,20 +78,38 @@ PRD 01 (Foundation), PRD 02 (Customer Backend), PRD 03 (Customer Frontend), PRD 
   - `/customers`, `/invoices`, `/payments` protected
   - `/login` remains public
 - ✅ User display (`Layout.tsx`):
-  - User name/email in header
-  - User avatar (if available)
-  - Logout button with proper session clearing
+  - User name/email in header with Avatar component
+  - Avatar component with initials fallback and color generation
+  - Logout button with React Query cache clearing
+  - Proper session invalidation via backend logout endpoint
+  - Navigation links with active state highlighting
 - ✅ Error handling:
   - Axios interceptor clears React Query cache on 401
   - Prevents infinite redirect loops
-  - OAuth error handling in LoginPage
+  - OAuth error handling in LoginPage (URL parameter detection)
   - Session expiration handling
+  - useAuth hook disabled on login page to prevent refetch loops
 - ✅ Comprehensive testing (`test-auth-comprehensive.sh`):
   - 18 test scenarios covering all authentication flows
   - All tests passing
   - Performance validation (< 200ms for all endpoints)
   - Complete customer, invoice, and payment flows with authentication
 - ✅ Test results documented (`AUTHENTICATION_TEST_RESULTS.md`)
+- ✅ Home Page Dashboard (`routes/index.tsx`):
+  - Welcome message with user's first name
+  - Statistics cards (Total Customers, Total Invoices, Outstanding Balance, Total Payments)
+  - Quick Actions section with links to main features
+  - Recent Invoices component (last 5 invoices)
+  - Recent Payments component (last 5 payments)
+  - Shows login page if not authenticated, dashboard if authenticated
+  - Real-time data fetching with React Query
+- ✅ Dotenv Configuration:
+  - `DotenvConfig.java` - Spring configuration bean for loading .env files
+  - `InvoiceMeApplication.java` - Loads .env before Spring Boot starts
+  - `dotenv-java` dependency in pom.xml (version 3.0.0)
+  - Environment variables available to `application.yml` via system properties
+- ✅ Development Scripts:
+  - `restart-backend.sh` - Script to restart backend server (kills existing process, starts new one)
 
 **Architecture Validation**:
 - ✅ Session-based authentication working correctly

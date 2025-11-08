@@ -21,10 +21,16 @@ export default function LoginPage() {
     const urlParams = new URLSearchParams(window.location.search)
     const errorParam = urlParams.get('error')
     
+    console.log('LoginPage mounted, checking for OAuth errors...')
+    console.log('URL params:', Object.fromEntries(urlParams.entries()))
+    
     if (errorParam) {
+      console.error('OAuth error detected:', errorParam)
       setError('Google authentication failed. Please try again.')
       // Clean up URL
       window.history.replaceState({}, '', window.location.pathname)
+    } else {
+      console.log('No OAuth errors detected')
     }
   }, [])
 
@@ -32,22 +38,31 @@ export default function LoginPage() {
   const handleGoogleSignIn = (e?: React.MouseEvent) => {
     e?.preventDefault()
     e?.stopPropagation()
+    
+    console.log('Initiating Google OAuth flow...')
+    console.log('Redirecting to:', 'http://localhost:8080/oauth2/authorization/google')
+    
     // Redirect to Spring Security OAuth2 authorization endpoint
     // Spring Security will handle the OAuth flow with Google
     // After successful authentication, it will redirect back to the frontend
-    window.location.replace('http://localhost:8080/oauth2/authorization/google')
+    try {
+      window.location.replace('http://localhost:8080/oauth2/authorization/google')
+    } catch (error) {
+      console.error('Error initiating OAuth flow:', error)
+      setError('Failed to initiate Google sign in. Please try again.')
+    }
   }
 
   if (isLoading || isAuthenticated) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center py-12">
         <LoadingSpinner size="lg" />
       </div>
     )
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-start pt-24 pb-8">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">InvoiceMe</h1>
@@ -61,7 +76,7 @@ export default function LoginPage() {
         )}
 
         <div className="mt-8">
-          <p className="text-sm text-gray-600 text-center mb-6">
+          <p className="text-sm text-gray-600 text-center mb-3">
             Sign in with your Google account to access InvoiceMe
           </p>
         </div>

@@ -129,7 +129,7 @@ export function InvoiceForm({
           </SelectTrigger>
           <SelectContent>
             {customers.length === 0 ? (
-              <SelectItem value="" disabled>
+              <SelectItem value="no-customers" disabled>
                 No customers available
               </SelectItem>
             ) : (

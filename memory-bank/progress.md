@@ -103,9 +103,10 @@
 - [x] CustomerRepository (JPA) ✅ COMPLETE
 - [x] InvoiceRepository (JPA) ✅ COMPLETE
 - [x] PaymentRepository (JPA) ✅ COMPLETE
-- [x] SecurityConfig (CORS configured, basic security, OAuth deferred)
-- [x] OpenApiConfig
-- [x] CorsConfig
+- [x] SecurityConfig (CORS configured, OAuth2 ready, dev mode permissive) ✅ COMPLETE
+- [x] OpenApiConfig ✅ COMPLETE
+- [x] CorsConfig ✅ COMPLETE
+- [x] DotenvConfig (for .env file loading) ✅ COMPLETE
 
 #### Presentation Layer
 - [x] CustomerController (REST endpoints - fully implemented) ✅ COMPLETE
@@ -147,8 +148,11 @@
 
 #### Shared Components
 - [x] Layout components (Layout with Header and Navigation)
-- [x] Common components (LoadingSpinner, ErrorMessage)
-- [x] Pagination component
+- [x] Common components (LoadingSpinner, ErrorMessage, Pagination)
+- [x] Avatar component (with initials fallback, color generation, picture support)
+- [x] StatCard component (with currency formatting, icons, links)
+- [x] RecentInvoices component (shows last 5 invoices with status badges)
+- [x] RecentPayments component (shows last 5 payments)
 - [x] shadcn/ui components (Badge, Button, Card, Dialog, Form, Input, Label, Select, Table)
 - [x] Navigation bar with active state highlighting
 
@@ -192,22 +196,33 @@
 - [x] InvoiceDetails enhancement (payment history, "Record Payment" button)
 
 #### Authentication ✅ COMPLETE (PRD 08)
-- [x] Login page (LoginPage.tsx with dev mode form login)
-- [x] useAuth hook (React Query integration, 401 handling)
+- [x] Login page (LoginPage.tsx with Google OAuth2 sign-in)
+- [x] useAuth hook (React Query integration, 401 handling, disabled on login page)
 - [x] ProtectedRoute component (redirects to login if not authenticated)
-- [x] Auth integration with backend (AuthController with login/logout/user endpoints)
-- [x] Dev mode authentication (DevAuthConfig with form-based login)
+- [x] Auth integration with backend (AuthController with user info and logout endpoints)
+- [x] Dev mode authentication (permissive SecurityConfig when `app.auth.dev-mode=true`)
 - [x] OAuth2 configuration ready (SecurityConfig, can be enabled with credentials)
 - [x] Session management (httpOnly cookies, session invalidation)
-- [x] User display in header (Layout component)
+- [x] User display in header (Layout component with Avatar)
 - [x] Protected routes (all feature routes require authentication)
 - [x] Comprehensive testing (18 test scenarios, all passing)
+- [x] Dotenv configuration (DotenvConfig.java, InvoiceMeApplication.java loads .env)
 
 #### API Integration
 - [x] Type generation from OpenAPI spec
 - [x] API client setup (Axios with baseURL, credentials)
 - [x] Error handling (401 redirect implemented)
-- [ ] Optimistic updates (React Query) - to be implemented in feature PRDs
+- [x] Optimistic updates (React Query) - implemented in feature PRDs
+
+#### Home Page / Dashboard ✅ COMPLETE
+- [x] HomePage component (shows login if not authenticated, dashboard if authenticated)
+- [x] Statistics cards (Total Customers, Total Invoices, Outstanding Balance, Total Payments)
+- [x] Quick Actions section (Create Invoice, Manage Customers, View All Invoices, Record Payment)
+- [x] Recent Invoices component (last 5 invoices with status badges and links)
+- [x] Recent Payments component (last 5 payments with invoice links)
+- [x] Welcome message with user's first name
+- [x] Real-time data fetching with React Query hooks
+- [x] SVG icons for stat cards (UsersIcon, FileTextIcon, DollarSignIcon, CreditCardIcon)
 
 #### UI/UX
 - [x] Responsive design (Customer and Invoice features)
