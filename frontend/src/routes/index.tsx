@@ -88,7 +88,8 @@ const CreditCardIcon = () => (
 
 // Home page component - shows login if not authenticated, welcome page if authenticated
 const HomePage = () => {
-  const { isAuthenticated, isLoading: authLoading, user } = useAuth()
+  // AUTHENTICATION DISABLED - for local development
+  const user = null // Mock user for when auth is disabled
 
   // Fetch data for dashboard stats
   // Use small page size to get totals efficiently
@@ -132,29 +133,15 @@ const HomePage = () => {
   const recentInvoices = invoicesData?.content.slice(0, 5) || []
   const recentPayments = paymentsData?.content.slice(0, 5) || []
 
-  const isLoading =
-    authLoading || customersLoading || invoicesLoading || paymentsLoading
+  const isLoading = customersLoading || invoicesLoading || paymentsLoading
 
-  if (authLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
-  }
-
-  // If not authenticated, show login page content
-  if (!isAuthenticated) {
-    return <LoginPage />
-  }
-
-  // If authenticated, show dashboard
+  // Show dashboard (authentication disabled)
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
       <section>
         <h1 className="text-3xl font-bold">
-          Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
+          Welcome back!
         </h1>
         <p className="text-muted-foreground mt-2">
           Here's what's happening with your business

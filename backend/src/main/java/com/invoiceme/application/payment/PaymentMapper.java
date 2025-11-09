@@ -5,13 +5,14 @@ import com.invoiceme.application.payment.dto.PaymentResponse;
 import com.invoiceme.domain.payment.Payment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
 import java.util.UUID;
 
 /**
  * MapStruct mapper for Payment entity and DTOs.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PaymentMapper {
 
     /**

@@ -54,5 +54,5 @@ logging:
 
 app:
   auth:
-    dev-mode: false  # Set to false to enable OAuth2
+    dev-mode: true  # Set to false to enable OAuth2
 

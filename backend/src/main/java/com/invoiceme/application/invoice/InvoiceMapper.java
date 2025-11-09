@@ -9,11 +9,12 @@ import com.invoiceme.domain.invoice.Invoice;
 import com.invoiceme.domain.invoice.LineItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface InvoiceMapper {
 
     /**
