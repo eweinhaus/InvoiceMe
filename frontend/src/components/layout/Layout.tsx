@@ -1,8 +1,13 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { logout } from '@/lib/auth/simpleAuth'
+import { queryClient } from '@/lib/react-query/queryClient'
 
 export default function Layout() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const navLinks = [
     { path: '/', label: 'Home' },
@@ -10,6 +15,12 @@ export default function Layout() {
     { path: '/invoices', label: 'Invoices' },
     { path: '/payments', label: 'Payments' },
   ]
+
+  const handleLogout = () => {
+    logout()
+    queryClient.clear()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,7 +43,14 @@ export default function Layout() {
                   )
                 })}
               </nav>
-              {/* Authentication disabled for local development */}
+              {user && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-600">{user.name}</span>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
