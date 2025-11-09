@@ -342,54 +342,60 @@ echo ""
 echo -e "${BLUE}=== Recording Payments ===${NC}"
 echo ""
 
+# Get current date in ISO format for payment dates
+CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%S")
+PAYMENT_DATE_1=$(date -u -v-10d +"%Y-%m-%dT%H:%M:%S" 2>/dev/null || date -u -d "10 days ago" +"%Y-%m-%dT%H:%M:%S" 2>/dev/null || echo "$CURRENT_DATE")
+PAYMENT_DATE_2=$(date -u -v-5d +"%Y-%m-%dT%H:%M:%S" 2>/dev/null || date -u -d "5 days ago" +"%Y-%m-%dT%H:%M:%S" 2>/dev/null || echo "$CURRENT_DATE")
+PAYMENT_DATE_3=$(date -u -v-2d +"%Y-%m-%dT%H:%M:%S" 2>/dev/null || date -u -d "2 days ago" +"%Y-%m-%dT%H:%M:%S" 2>/dev/null || echo "$CURRENT_DATE")
+
 # Payment 1: Partial payment for Global Services Ltd invoice
 echo -e "${YELLOW}1. Recording partial payment for Global Services Ltd invoice...${NC}"
-api_call "POST" "${API_URL}/payments" \
+response=$(api_call "POST" "${API_URL}/payments" \
     "{
         \"invoiceId\": \"${INVOICE_IDS[2]}\",
         \"amount\": 5000.00,
-        \"paymentDate\": \"2024-11-15T10:00:00\"
+        \"paymentDate\": \"${PAYMENT_DATE_1}\"
     }" \
-    "Record payment for Global Services Ltd" > /dev/null
+    "Record payment for Global Services Ltd")
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Recorded payment of \$5,000.00 (Remaining balance: \$3,500.00)${NC}"
 else
-    echo -e "${RED}Failed to record payment${NC}"
+    echo -e "${YELLOW}⚠ Payment failed, but continuing...${NC}"
 fi
 echo ""
 
 # Payment 2: Full payment for Creative Agency invoice
 echo -e "${YELLOW}2. Recording full payment for Creative Agency invoice...${NC}"
-api_call "POST" "${API_URL}/payments" \
+response=$(api_call "POST" "${API_URL}/payments" \
     "{
         \"invoiceId\": \"${INVOICE_IDS[3]}\",
         \"amount\": 8250.00,
-        \"paymentDate\": \"2024-11-20T14:30:00\"
+        \"paymentDate\": \"${PAYMENT_DATE_2}\"
     }" \
-    "Record payment for Creative Agency" > /dev/null
+    "Record payment for Creative Agency")
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Recorded payment of \$8,250.00 (Invoice fully paid)${NC}"
 else
-    echo -e "${RED}Failed to record payment${NC}"
+    echo -e "${YELLOW}⚠ Payment failed, but continuing...${NC}"
 fi
 echo ""
 
 # Payment 3: Second partial payment for Global Services Ltd
 echo -e "${YELLOW}3. Recording second payment for Global Services Ltd invoice...${NC}"
-api_call "POST" "${API_URL}/payments" \
+response=$(api_call "POST" "${API_URL}/payments" \
     "{
         \"invoiceId\": \"${INVOICE_IDS[2]}\",
         \"amount\": 2000.00,
-        \"paymentDate\": \"2024-11-25T09:15:00\"
+        \"paymentDate\": \"${PAYMENT_DATE_3}\"
     }" \
-    "Record payment for Global Services Ltd" > /dev/null
+    "Record payment for Global Services Ltd")
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Recorded payment of \$2,000.00 (Remaining balance: \$1,500.00)${NC}"
 else
-    echo -e "${RED}Failed to record payment${NC}"
+    echo -e "${YELLOW}⚠ Payment failed, but continuing...${NC}"
 fi
 echo ""
 
