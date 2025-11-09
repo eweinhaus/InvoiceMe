@@ -402,3 +402,4 @@ cd backend
 **Test Environment**: Local development (H2/PostgreSQL via Testcontainers)
 **Test Framework**: JUnit 5, Testcontainers, Playwright
 
+

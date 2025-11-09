@@ -130,3 +130,4 @@ export async function markInvoiceAsSent(id: string): Promise<Invoice> {
   return mapInvoiceResponse(response.data)
 }
 
+

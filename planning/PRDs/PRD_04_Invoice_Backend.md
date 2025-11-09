@@ -200,3 +200,4 @@ This PRD implements the complete backend for Invoice management with rich domain
 - Lifecycle management is a key architectural requirement
 - Balance calculation can be stubbed initially, fully tested with PRD 06
 
+

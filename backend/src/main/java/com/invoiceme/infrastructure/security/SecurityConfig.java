@@ -46,14 +46,12 @@ public class SecurityConfig {
                     )
                     .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // For H2 console
         } else {
+            // Dev mode: Disable all authentication
             http
                     .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                     .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                            .requestMatchers("/h2-console/**").permitAll()
-                            .requestMatchers("/api/**").permitAll()
-                            .anyRequest().authenticated()
+                            .anyRequest().permitAll()  // Allow all requests without authentication
                     )
                     .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
         }

@@ -55,3 +55,4 @@ Overview of deliverables folder contents.
 **Project**: InvoiceMe - AI-Assisted Full-Stack ERP Assessment
 **Status**: All core functionality complete, deliverables prepared
 
+

@@ -23,3 +23,4 @@ echo "✅ Environment variables configured"
 echo "Region: $AWS_REGION"
 echo "Environment: $ENVIRONMENT"
 
+

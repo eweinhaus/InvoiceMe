@@ -47,3 +47,4 @@ export function mapPaymentResponse(response: PaymentResponse): Payment {
   }
 }
 
+

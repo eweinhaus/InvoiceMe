@@ -78,3 +78,4 @@ echo "  Task Role: arn:aws:iam::$ACCOUNT_ID:role/ecsTaskRole"
 echo ""
 echo "Update these ARNs in your ECS task definition JSON files."
 
+
