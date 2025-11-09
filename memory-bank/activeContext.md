@@ -2,9 +2,9 @@
 
 ## Current Work Focus
 
-**Status**: ✅ **ALL PRDs COMPLETE** - Authentication & Integration Complete
+**Status**: ✅ **DEPLOYED TO PRODUCTION** - Application Live on Render
 
-PRD 01 (Foundation), PRD 02 (Customer Backend), PRD 03 (Customer Frontend), PRD 04 (Invoice Backend), PRD 05 (Invoice Frontend), PRD 06 (Payment Backend), PRD 07 (Payment Frontend), and PRD 08 (Authentication & Integration) have been successfully completed. All core features (Customer, Invoice, Payment) are fully functional end-to-end with authentication protection. The application is ready for final testing and deployment.
+PRD 01 (Foundation), PRD 02 (Customer Backend), PRD 03 (Customer Frontend), PRD 04 (Invoice Backend), PRD 05 (Invoice Frontend), PRD 06 (Payment Backend), PRD 07 (Payment Frontend), and PRD 08 (Authentication & Integration) have been successfully completed. All core features (Customer, Invoice, Payment) are fully functional end-to-end with authentication protection. **The application is now deployed and live on Render.**
 
 **Recent Fix**: ✅ Java 17 Compilation Issue Resolved (November 7, 2024)
 - Maven was using Java 25.0.1, causing compilation failures
@@ -14,19 +14,24 @@ PRD 01 (Foundation), PRD 02 (Customer Backend), PRD 03 (Customer Frontend), PRD 
 - Permanent fix: JAVA_HOME added to `~/.zshrc`
 
 **Current State**:
-- ✅ Backend: Spring Boot 3.3.11 running on http://localhost:8080
-- ✅ Frontend: React + Vite running on http://localhost:5173
+- ✅ **Production Deployment**: Application deployed to Render
+  - Backend: https://invoiceme-backend.onrender.com (Docker-based, Spring Boot)
+  - Frontend: https://invoiceme-frontend.onrender.com (Static site, React + Vite)
+  - Database: PostgreSQL on Render (invoiceme-db)
+- ✅ Local Development:
+  - Backend: Spring Boot 3.3.11 running on http://localhost:8080
+  - Frontend: React + Vite running on http://localhost:5173
 - ✅ OpenAPI spec generated and accessible
 - ✅ TypeScript types generated from OpenAPI
-- ✅ CORS configured and working
+- ✅ CORS configured and working (supports localhost, CloudFront, and Render domains)
 - ✅ All infrastructure components in place
 - ✅ Customer feature fully functional (backend + frontend)
 - ✅ Invoice feature fully functional (backend + frontend)
 - ✅ Payment feature fully functional (backend + frontend)
 - ✅ Navigation bar added to Layout component
 - ✅ InvoiceDetails component enhanced with payment history and "Record Payment" button
-- ✅ Authentication system fully functional (OAuth2 ready, dev mode permissive)
-- ✅ All API endpoints protected with authentication (when OAuth2 enabled)
+- ✅ Authentication system fully functional (dev mode enabled, OAuth2 disabled for production)
+- ✅ All API endpoints accessible (dev mode permissive)
 - ✅ Protected routes working on frontend
 - ✅ Login/logout functionality working
 - ✅ User display in header with Avatar component
@@ -36,6 +41,76 @@ PRD 01 (Foundation), PRD 02 (Customer Backend), PRD 03 (Customer Frontend), PRD 
 - ✅ Backend restart script for development
 
 ## Recent Changes
+
+### ✅ Production Deployment to Render - COMPLETED (November 9, 2025)
+
+**Deployment Implementation Completed**:
+- ✅ **Render MCP Setup**:
+  - Render MCP server configured in Cursor (`~/.cursor/mcp.json`)
+  - Render API key configured for programmatic access
+  - MCP tools available for service management
+- ✅ **PostgreSQL Database**:
+  - Database created: `invoiceme-db` (PostgreSQL 16)
+  - Database ID: `dpg-d48h5schg0os7389khh0-a`
+  - Connection configured: Host, Port, Database, Username, Password
+  - Flyway migrations applied successfully (4 migrations: init, customers, invoices, payments)
+- ✅ **Backend Web Service**:
+  - Service created: `invoiceme-backend` (Docker runtime)
+  - Service ID: `srv-d48h64qli9vc739aeu90`
+  - URL: https://invoiceme-backend.onrender.com
+  - Dockerfile created at repository root (builds from `backend/` directory)
+  - Environment variables configured:
+    - `DB_HOST`: `dpg-d48h5schg0os7389khh0-a`
+    - `DB_PORT`: `5432`
+    - `DB_NAME`: `invoiceme_db`
+    - `DB_USERNAME`: `invoiceme_db_user`
+    - `DB_PASSWORD`: (configured)
+    - `APP_AUTH_DEV_MODE`: `true` (authentication disabled)
+    - `FRONTEND_URL`: `https://invoiceme-frontend.onrender.com`
+  - Port configuration: Uses `${PORT:8080}` in `application-prod.yml` (Render provides PORT env var)
+  - Health check: `/actuator/health` endpoint working
+  - Root endpoint: `/` returns API information (RootController added)
+- ✅ **Frontend Static Site**:
+  - Service created: `invoiceme-frontend` (Static site)
+  - Service ID: `srv-d48h6kali9vc739af52g`
+  - URL: https://invoiceme-frontend.onrender.com
+  - Build command: `cd frontend && npm install && VITE_API_URL=https://invoiceme-backend.onrender.com/api npm run build`
+  - Publish path: `frontend/dist`
+  - Environment variable: `VITE_API_URL` set during build
+  - SPA routing: Redirects/rewrites configured in Render dashboard (`/*` → `/index.html`)
+  - 404 catch-all route added to React Router
+- ✅ **Configuration Updates**:
+  - `SecurityConfig.java`: Uses `FRONTEND_URL` env var for OAuth redirects
+  - `CorsConfig.java`: Added `https://*.onrender.com` to allowed origins
+  - `application-prod.yml`: Uses `${PORT:8080}` for dynamic port assignment
+  - `frontend/package.json`: Added `patch-package` dev dependency (fixes build issue)
+  - `frontend/public/_redirects`: Created for SPA routing (Render uses dashboard config)
+  - `frontend/src/routes/index.tsx`: Added catch-all 404 route
+  - `backend/src/main/java/com/invoiceme/presentation/rest/RootController.java`: Added root endpoint handler
+- ✅ **Build Fixes**:
+  - Frontend build: Fixed `patch-package` error by adding as dev dependency
+  - Backend build: Dockerfile correctly builds from `backend/` subdirectory
+  - Database connection: Fixed hostname format (removed `.internal` suffix)
+- ✅ **Deployment Verification**:
+  - Backend health check: 200 OK
+  - Backend API endpoints: Working correctly
+  - Frontend static site: Serving correctly
+  - Frontend routing: Direct route access working (SPA routing configured)
+  - Database: Connected and migrations applied
+  - CORS: Configured for Render domains
+
+**Deployment Architecture**:
+- **Backend**: Docker container running Spring Boot JAR
+- **Frontend**: Static site served via CDN
+- **Database**: Managed PostgreSQL on Render
+- **Auto-deploy**: Enabled for both services (deploys on git push to main branch)
+
+**Key Deployment Decisions**:
+- Authentication disabled in production (`APP_AUTH_DEV_MODE=true`) - no OAuth2 required
+- CORS configured for Render domains (`*.onrender.com`)
+- Dynamic port configuration for Render's port assignment
+- SPA routing configured via Render dashboard redirects/rewrites
+- Environment variables managed via Render dashboard
 
 ### ✅ PRD 08 Authentication & Integration - COMPLETED (November 7, 2024)
 

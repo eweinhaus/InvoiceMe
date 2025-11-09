@@ -169,6 +169,77 @@ mvn clean package  # Creates executable JAR
 npm run build  # Creates dist/ folder
 ```
 
+### Production Deployment (Render)
+
+**Deployment Platform**: Render (https://render.com)
+
+**Backend Service**:
+- **Type**: Web Service (Docker)
+- **Service ID**: `srv-d48h64qli9vc739aeu90`
+- **URL**: https://invoiceme-backend.onrender.com
+- **Runtime**: Docker
+- **Dockerfile**: Located at repository root (`Dockerfile`)
+  - Builds from `backend/` directory
+  - Multi-stage build: Maven build → JRE runtime
+  - Exposes port 8080
+- **Environment Variables** (configured in Render dashboard):
+  - `DB_HOST`: PostgreSQL hostname
+  - `DB_PORT`: `5432`
+  - `DB_NAME`: `invoiceme_db`
+  - `DB_USERNAME`: `invoiceme_db_user`
+  - `DB_PASSWORD`: (from Render database)
+  - `APP_AUTH_DEV_MODE`: `true` (authentication disabled)
+  - `FRONTEND_URL`: `https://invoiceme-frontend.onrender.com`
+  - `PORT`: (provided by Render, defaults to 8080)
+- **Auto-deploy**: Enabled (deploys on push to `main` branch)
+- **Health Check**: `/actuator/health` endpoint
+
+**Frontend Service**:
+- **Type**: Static Site
+- **Service ID**: `srv-d48h6kali9vc739af52g`
+- **URL**: https://invoiceme-frontend.onrender.com
+- **Build Command**: `cd frontend && npm install && VITE_API_URL=https://invoiceme-backend.onrender.com/api npm run build`
+- **Publish Path**: `frontend/dist`
+- **Environment Variables** (set during build):
+  - `VITE_API_URL`: `https://invoiceme-backend.onrender.com/api`
+- **SPA Routing**: Configured in Render dashboard
+  - Redirect/Rewrite: `/*` → `/index.html` (Action: Rewrite)
+- **Auto-deploy**: Enabled (deploys on push to `main` branch)
+
+**Database**:
+- **Type**: PostgreSQL (Managed)
+- **Database ID**: `dpg-d48h5schg0os7389khh0-a`
+- **Version**: PostgreSQL 16
+- **Database Name**: `invoiceme_db`
+- **Username**: `invoiceme_db_user`
+- **Migrations**: Flyway migrations applied automatically on backend startup
+
+**Deployment Configuration Files**:
+- `Dockerfile`: Root-level Dockerfile for backend (builds from `backend/` directory)
+- `frontend/public/_redirects`: SPA routing file (Render uses dashboard config instead)
+- `backend/src/main/resources/application-prod.yml`: Production Spring Boot configuration
+  - Uses `${PORT:8080}` for dynamic port assignment
+  - Profile: `prod`
+
+**Render MCP Integration**:
+- **MCP Server**: Configured in `~/.cursor/mcp.json`
+- **API Key**: Stored in MCP configuration
+- **Tools Available**: Service management, deployment tracking, log access
+
+**Deployment Process**:
+1. Push code to `main` branch on GitHub
+2. Render auto-detects changes and triggers build
+3. Backend: Docker build → Deploy container
+4. Frontend: npm install → npm run build → Deploy static files
+5. Database: Migrations run automatically on backend startup
+
+**Key Deployment Notes**:
+- Authentication disabled in production (`APP_AUTH_DEV_MODE=true`)
+- CORS configured for Render domains (`*.onrender.com`)
+- Root endpoint (`/`) returns API information
+- 404 catch-all route added to React Router
+- SPA routing requires Render dashboard configuration (redirects/rewrites)
+
 ### Development Servers
 - **Backend**: `http://localhost:8080` (✅ running in Docker with Java 17)
 - **Frontend**: `http://localhost:5173` (✅ running, Vite default)
@@ -177,6 +248,14 @@ npm run build  # Creates dist/ folder
 - **OpenAPI Spec**: `http://localhost:8080/v3/api-docs` (✅ accessible)
 - **H2 Console**: `http://localhost:8080/h2-console` (✅ accessible)
 - **Login Page**: `http://localhost:5173/login` (✅ accessible)
+
+### Production Servers (Render)
+- **Backend API**: https://invoiceme-backend.onrender.com (✅ live)
+- **Frontend**: https://invoiceme-frontend.onrender.com (✅ live)
+- **Backend Health**: https://invoiceme-backend.onrender.com/actuator/health (✅ accessible)
+- **Swagger UI**: https://invoiceme-backend.onrender.com/swagger-ui.html (✅ accessible)
+- **OpenAPI Spec**: https://invoiceme-backend.onrender.com/v3/api-docs (✅ accessible)
+- **Root Endpoint**: https://invoiceme-backend.onrender.com/ (✅ returns API info)
 
 ### Development Scripts
 - **restart-backend.sh**: Script to restart backend server
