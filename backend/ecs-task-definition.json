@@ -1,0 +1,81 @@
+{
+  "family": "invoiceme-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::971422717446:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::971422717446:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "invoiceme-backend",
+      "image": "971422717446.dkr.ecr.us-east-1.amazonaws.com/invoiceme-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "invoicemestack-invoicemedatabasewriterf362d957-yttk7pxlqvtj.crws0amqe1e3.us-east-1.rds.amazonaws.com"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "DB_NAME",
+          "value": "invoiceme"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:971422717446:secret:invoiceme/db/username"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:971422717446:secret:invoiceme/db/password"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:971422717446:secret:invoiceme/oauth/google-client-id"
+        },
+        {
+          "name": "GOOGLE_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:971422717446:secret:invoiceme/oauth/google-client-secret"
+        },
+        {
+          "name": "OAUTH_REDIRECT_URI",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:971422717446:secret:invoiceme/oauth/redirect-uri"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/invoiceme-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/actuator/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
+

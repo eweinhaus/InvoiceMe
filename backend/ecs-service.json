@@ -1,0 +1,32 @@
+{
+  "serviceName": "invoiceme-backend-service",
+  "cluster": "invoiceme-cluster",
+  "taskDefinition": "invoiceme-backend",
+  "desiredCount": 2,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-0ec51c4b01051563c",
+        "subnet-0dcbb744fa27d655a"
+      ],
+      "securityGroups": [
+        "sg-0329dcc5ab7f313f3"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:971422717446:targetgroup/Invoic-Invoi-OVDVZC4HAMIH/7a1050345cdd178f",
+      "containerName": "invoiceme-backend",
+      "containerPort": 8080
+    }
+  ],
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100
+  },
+  "healthCheckGracePeriodSeconds": 60
+}
+

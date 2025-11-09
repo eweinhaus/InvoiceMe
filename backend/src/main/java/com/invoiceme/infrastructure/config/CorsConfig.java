@@ -14,7 +14,11 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Use allowedOriginPatterns for wildcard support (mutually exclusive with setAllowedOrigins)
+        configuration.setAllowedOriginPatterns(List.of(
+            "http://localhost:*",
+            "https://*.cloudfront.net"  // Allow any CloudFront distribution
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
         configuration.setAllowCredentials(true);

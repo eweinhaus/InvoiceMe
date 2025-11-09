@@ -6,8 +6,8 @@ import { PaymentsPage } from '../features/payments/pages/PaymentsPage'
 import LoginPage from '../pages/LoginPage'
 import ProtectedRoute from '../components/common/ProtectedRoute'
 import { Button } from '../components/ui/button'
-import { useAuth } from '../lib/hooks/useAuth'
-import LoadingSpinner from '../components/common/LoadingSpinner'
+// import { useAuth } from '../lib/hooks/useAuth'
+// import LoadingSpinner from '../components/common/LoadingSpinner'
 import { StatCard } from '../components/common/StatCard'
 import { RecentInvoices } from '../components/common/RecentInvoices'
 import { RecentPayments } from '../components/common/RecentPayments'
@@ -89,14 +89,14 @@ const CreditCardIcon = () => (
 // Home page component - shows login if not authenticated, welcome page if authenticated
 const HomePage = () => {
   // AUTHENTICATION DISABLED - for local development
-  const user = null // Mock user for when auth is disabled
+  // const user = null // Mock user for when auth is disabled
 
   // Fetch data for dashboard stats
   // Use small page size to get totals efficiently
   const {
     data: customersData,
-    isLoading: customersLoading,
-    error: customersError,
+    // isLoading: customersLoading,
+    // error: customersError,
   } = useCustomers(0, 1)
   const {
     data: invoicesData,
@@ -133,7 +133,7 @@ const HomePage = () => {
   const recentInvoices = invoicesData?.content.slice(0, 5) || []
   const recentPayments = paymentsData?.content.slice(0, 5) || []
 
-  const isLoading = customersLoading || invoicesLoading || paymentsLoading
+  // const isLoading = customersLoading || invoicesLoading || paymentsLoading
 
   // Show dashboard (authentication disabled)
   return (
