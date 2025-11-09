@@ -17,7 +17,8 @@ public class CorsConfig {
         // Use allowedOriginPatterns for wildcard support (mutually exclusive with setAllowedOrigins)
         configuration.setAllowedOriginPatterns(List.of(
             "http://localhost:*",
-            "https://*.cloudfront.net"  // Allow any CloudFront distribution
+            "https://*.cloudfront.net",  // Allow any CloudFront distribution
+            "https://*.onrender.com"     // Allow any Render static site
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));

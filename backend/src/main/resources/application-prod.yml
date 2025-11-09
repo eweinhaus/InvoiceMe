@@ -45,7 +45,7 @@ spring:
             issuer-uri: https://accounts.google.com
 
 server:
-  port: 8080
+  port: ${PORT:8080}  # Render provides PORT env var, fallback to 8080 for local
   error:
     include-message: always
     include-binding-errors: always

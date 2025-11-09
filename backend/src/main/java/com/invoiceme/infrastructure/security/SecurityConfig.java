@@ -17,6 +17,9 @@ public class SecurityConfig {
     @Value("${app.auth.dev-mode:false}")
     private boolean devMode;
 
+    @Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
+
     public SecurityConfig(CorsConfig corsConfig) {
         this.corsConfig = corsConfig;
     }
@@ -38,8 +41,8 @@ public class SecurityConfig {
                             .anyRequest().authenticated()
                     )
                     .oauth2Login(oauth2 -> oauth2
-                            .defaultSuccessUrl("http://localhost:5173/customers", true)
-                            .failureUrl("http://localhost:5173/login?error=true")
+                            .defaultSuccessUrl(frontendUrl + "/customers", true)
+                            .failureUrl(frontendUrl + "/login?error=true")
                     )
                     .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // For H2 console
         } else {

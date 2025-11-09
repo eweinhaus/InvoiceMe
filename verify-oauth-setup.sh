@@ -2,36 +2,11 @@
 
 # Verify Google OAuth Setup Script
 # This script helps verify that your OAuth setup is complete
+# Updated for Render deployment (gcloud checks removed)
 
 echo "🔍 Google OAuth Setup Verification"
 echo "=================================="
 echo ""
-
-# Check if gcloud is installed
-if ! command -v gcloud &> /dev/null; then
-    echo "⚠️  gcloud CLI is not installed."
-    echo "   Install it from: https://cloud.google.com/sdk/docs/install"
-    echo ""
-else
-    echo "✅ gcloud CLI is installed"
-    
-    # Check if authenticated
-    if gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/null; then
-        ACTIVE_ACCOUNT=$(gcloud auth list --filter=status:ACTIVE --format="value(account)" | head -n 1)
-        echo "✅ Authenticated as: $ACTIVE_ACCOUNT"
-    else
-        echo "⚠️  Not authenticated. Run: gcloud auth login"
-    fi
-    
-    # Check if project is set
-    PROJECT=$(gcloud config get-value project 2>/dev/null)
-    if [ -n "$PROJECT" ]; then
-        echo "✅ Project set to: $PROJECT"
-    else
-        echo "⚠️  No project set. Run: gcloud config set project PROJECT_ID"
-    fi
-    echo ""
-fi
 
 # Check environment variables
 echo "📋 Environment Variables Check:"
