@@ -8,7 +8,7 @@ import {
 import {
   useCreateInvoice,
   useUpdateInvoice,
-  useMarkInvoiceAsSent,
+  useSendInvoiceViaEmail,
 } from './useInvoiceMutations'
 import type {
   InvoiceStatus,
@@ -67,7 +67,7 @@ export function useInvoiceViewModel() {
   // Mutation hooks
   const createInvoiceMutation = useCreateInvoice()
   const updateInvoiceMutation = useUpdateInvoice()
-  const markAsSentMutation = useMarkInvoiceAsSent()
+  const sendViaEmailMutation = useSendInvoiceViaEmail()
 
   // Transform data
   const invoices = useMemo(
@@ -94,8 +94,8 @@ export function useInvoiceViewModel() {
     updateInvoiceMutation.mutate({ id, data })
   }
 
-  const handleMarkAsSent = (id: string) => {
-    markAsSentMutation.mutate(id)
+  const handleSendViaEmail = (id: string) => {
+    sendViaEmailMutation.mutate(id)
   }
 
   return {
@@ -111,7 +111,7 @@ export function useInvoiceViewModel() {
     // Actions
     createInvoice: handleCreateInvoice,
     updateInvoice: handleUpdateInvoice,
-    markAsSent: handleMarkAsSent,
+    sendViaEmail: handleSendViaEmail,
     // Setters
     setStatusFilter,
     setCustomerFilter,

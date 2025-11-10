@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createInvoice,
   updateInvoice,
-  markInvoiceAsSent,
+  sendInvoiceViaEmail,
 } from '@/lib/api/invoices'
 import type {
   CreateInvoiceRequest,
@@ -57,22 +57,22 @@ export function useUpdateInvoice() {
 }
 
 /**
- * Mutation hook to mark invoice as SENT
+ * Mutation hook to send invoice via email
  */
-export function useMarkInvoiceAsSent() {
+export function useSendInvoiceViaEmail() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => markInvoiceAsSent(id),
+    mutationFn: (id: string) => sendInvoiceViaEmail(id),
     onSuccess: (_data, id) => {
       // Invalidate all invoice queries
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       // Invalidate specific invoice query
       queryClient.invalidateQueries({ queryKey: ['invoices', id] })
-      console.log('Invoice marked as sent successfully')
+      console.log('Invoice sent via email successfully')
     },
     onError: (error) => {
-      console.error('Failed to mark invoice as sent:', error)
+      console.error('Failed to send invoice via email:', error)
     },
   })
 }

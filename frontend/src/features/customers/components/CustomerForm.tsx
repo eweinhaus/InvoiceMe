@@ -144,7 +144,7 @@ export default function CustomerForm({
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" variant="default" disabled={isLoading}>
             {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
           </Button>
         </div>

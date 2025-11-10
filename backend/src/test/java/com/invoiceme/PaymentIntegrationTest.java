@@ -1,7 +1,8 @@
 package com.invoiceme;
 
+import com.invoiceme.BaseIntegrationTest;
+import com.invoiceme.application.invoice.EmailService;
 import com.invoiceme.application.invoice.InvoiceCommandService;
-import com.invoiceme.application.invoice.InvoiceQueryService;
 import com.invoiceme.application.invoice.dto.CreateInvoiceRequest;
 import com.invoiceme.application.invoice.dto.InvoiceResponse;
 import com.invoiceme.application.invoice.dto.LineItemRequest;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,6 +36,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -58,6 +62,9 @@ class PaymentIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @MockBean
+    private EmailService emailService;
+
     private Customer testCustomer;
     private Invoice testInvoice;
 
@@ -69,6 +76,9 @@ class PaymentIntegrationTest extends BaseIntegrationTest {
         
         testCustomer = customerRepository.save(new Customer("Test Customer", "test@example.com", null, null));
         
+        // Mock email service to do nothing
+        doNothing().when(emailService).sendInvoiceEmail(any(), any());
+        
         // Create invoice in SENT status with line items
         CreateInvoiceRequest invoiceRequest = new CreateInvoiceRequest(
                 testCustomer.getId(),
@@ -77,7 +87,7 @@ class PaymentIntegrationTest extends BaseIntegrationTest {
                 )
         );
         InvoiceResponse invoiceResponse = invoiceCommandService.createInvoice(invoiceRequest);
-        invoiceCommandService.markAsSent(invoiceResponse.id());
+        invoiceCommandService.sendInvoiceViaEmail(invoiceResponse.id());
         testInvoice = invoiceRepository.findById(invoiceResponse.id()).orElseThrow();
     }
 

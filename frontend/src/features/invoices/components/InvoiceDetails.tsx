@@ -26,21 +26,21 @@ import type { PaymentRequest } from '@/features/payments/types/payment.types'
 import { formatCurrency, formatDate } from '@/lib/utils/formatters'
 import { useRecordPayment } from '@/features/payments/hooks/usePaymentMutations'
 import { useQueryClient } from '@tanstack/react-query'
-import { Download, CreditCard, Send, X } from 'lucide-react'
+import { Download, CreditCard, Mail, X } from 'lucide-react'
 import apiClient from '@/lib/api/client'
 
 interface InvoiceDetailsProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   invoice: Invoice | null
-  onMarkAsSent?: (invoice: Invoice) => void
+  onSendViaEmail?: (invoice: Invoice) => void
 }
 
 export function InvoiceDetails({
   open,
   onOpenChange,
   invoice,
-  onMarkAsSent,
+  onSendViaEmail,
 }: InvoiceDetailsProps) {
   const [isPaymentFormOpen, setIsPaymentFormOpen] = useState(false)
   const queryClient = useQueryClient()
@@ -332,17 +332,18 @@ export function InvoiceDetails({
               <Download className="h-4 w-4" />
               Download PDF
             </Button>
-            {invoice.status === InvoiceStatus.DRAFT && onMarkAsSent && (
+            {invoice.status === InvoiceStatus.DRAFT && onSendViaEmail && (
               <Button
                 onClick={() => {
-                  onMarkAsSent(invoice)
+                  onSendViaEmail(invoice)
                   onOpenChange(false)
                 }}
                 variant="outline"
                 className="flex items-center gap-2"
+                aria-label="Send invoice via email"
               >
-                <Send className="h-4 w-4" />
-                Mark as Sent
+                <Mail className="h-4 w-4" />
+                Send via Email
               </Button>
             )}
             <Button

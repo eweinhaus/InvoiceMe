@@ -94,6 +94,7 @@ export default function LoginPage() {
 
           <Button
             type="submit"
+            variant="default"
             className="w-full"
             size="lg"
             disabled={isSubmitting}

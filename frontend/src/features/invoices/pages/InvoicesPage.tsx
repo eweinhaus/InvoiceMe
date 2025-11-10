@@ -110,8 +110,8 @@ export function InvoicesPage() {
     }
   }
 
-  const handleMarkAsSent = (invoice: Invoice) => {
-    viewModel.markAsSent(invoice.id)
+  const handleSendViaEmail = (invoice: Invoice) => {
+    viewModel.sendViaEmail(invoice.id)
   }
 
   const handleStatusFilterChange = (value: string) => {
@@ -135,7 +135,7 @@ export function InvoicesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold">Invoices</h1>
-        <Button onClick={handleCreateInvoice} aria-label="Create new invoice" className="hover:bg-blue-600">
+        <Button onClick={handleCreateInvoice} aria-label="Create new invoice" variant="outline">
           Create Invoice
         </Button>
       </div>
@@ -197,7 +197,7 @@ export function InvoicesPage() {
         pagination={viewModel.pagination}
         onViewDetails={handleViewDetails}
         onEdit={handleEditInvoice}
-        onMarkAsSent={handleMarkAsSent}
+        onSendViaEmail={handleSendViaEmail}
         onPageChange={viewModel.setPage}
       />
 
@@ -228,7 +228,7 @@ export function InvoicesPage() {
         open={isDetailsOpen}
         onOpenChange={setIsDetailsOpen}
         invoice={selectedInvoice}
-        onMarkAsSent={handleMarkAsSent}
+        onSendViaEmail={handleSendViaEmail}
       />
     </div>
   )

@@ -93,7 +93,7 @@ export function PaymentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold">Payments</h1>
-        <Button onClick={handleRecordPayment} aria-label="Record new payment" className="hover:bg-blue-600">
+        <Button onClick={handleRecordPayment} aria-label="Record new payment" variant="outline">
           Record Payment
         </Button>
       </div>

@@ -80,3 +80,50 @@ Configuration is in `src/main/resources/application.yml`
 - Port: 8080
 - CORS: Configured for `http://localhost:5173` (frontend)
 
+### Email Configuration
+
+The application supports sending invoices via email. Configure SMTP settings using environment variables.
+
+**📖 For detailed SMTP setup instructions, see: [`md_files/SMTP_SETUP_GUIDE.md`](../md_files/SMTP_SETUP_GUIDE.md)**
+
+**Required Environment Variables:**
+- `SMTP_HOST`: SMTP server hostname (e.g., `smtp.gmail.com`, `smtp.sendgrid.net`)
+- `SMTP_PORT`: SMTP server port (typically `587` for TLS, `465` for SSL)
+- `SMTP_USERNAME`: SMTP username/email address
+- `SMTP_PASSWORD`: SMTP password or app password
+
+**Example Configuration:**
+
+For Gmail:
+```bash
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+```
+
+For SendGrid:
+```bash
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+SMTP_USERNAME=apikey
+SMTP_PASSWORD=your-sendgrid-api-key
+```
+
+For Mailtrap (testing):
+```bash
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USERNAME=your-mailtrap-username
+SMTP_PASSWORD=your-mailtrap-password
+```
+
+**Development/Testing:**
+- For local testing, you can use MailHog (runs on `localhost:1025`) or Mailtrap
+- Test configuration uses `localhost:1025` by default (configured in `application-test.yml`)
+
+**Production:**
+- Set environment variables in your deployment platform (e.g., Render dashboard)
+- Recommended providers: SendGrid, AWS SES, or Mailgun
+- Ensure SMTP credentials are stored securely (use secrets management)
+

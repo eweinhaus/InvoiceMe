@@ -27,7 +27,7 @@ interface InvoiceListProps {
   }
   onViewDetails: (invoice: Invoice) => void
   onEdit: (invoice: Invoice) => void
-  onMarkAsSent: (invoice: Invoice) => void
+  onSendViaEmail: (invoice: Invoice) => void
   onPageChange: (page: number) => void
   onSizeChange?: (size: number) => void
 }
@@ -39,7 +39,7 @@ export function InvoiceList({
   pagination,
   onViewDetails,
   onEdit,
-  onMarkAsSent,
+  onSendViaEmail,
   onPageChange,
 }: InvoiceListProps) {
   if (isLoading) {
@@ -126,10 +126,10 @@ export function InvoiceList({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => onMarkAsSent(invoice)}
-                          aria-label={`Mark invoice ${formatInvoiceNumber(invoice.id)} as sent`}
+                          onClick={() => onSendViaEmail(invoice)}
+                          aria-label={`Send invoice ${formatInvoiceNumber(invoice.id)} via email`}
                         >
-                          Mark as Sent
+                          Send via Email
                         </Button>
                       </>
                     )}

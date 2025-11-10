@@ -121,9 +121,9 @@ export async function updateInvoice(
 }
 
 /**
- * Mark invoice as SENT
+ * Send invoice via email to customer
  */
-export async function markInvoiceAsSent(id: string): Promise<Invoice> {
+export async function sendInvoiceViaEmail(id: string): Promise<Invoice> {
   const response = await apiClient.post<InvoiceResponse>(
     `/invoices/${id}/send`
   )

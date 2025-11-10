@@ -226,7 +226,7 @@ export function InvoiceForm({
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" variant="outline" disabled={isLoading}>
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create Invoice' : 'Update Invoice'}
         </Button>
       </div>

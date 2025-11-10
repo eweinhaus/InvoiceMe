@@ -105,13 +105,14 @@ public class InvoiceController {
     }
 
     @PostMapping("/{id}/send")
-    @Operation(summary = "Mark invoice as SENT", 
-               description = "Transitions invoice from DRAFT to SENT status. Validates invoice has line items and total > 0")
-    @ApiResponse(responseCode = "200", description = "Invoice marked as SENT")
+    @Operation(summary = "Send invoice via email", 
+               description = "Generates PDF, sends email to customer with PDF attachment, and marks invoice as SENT. Only marks as SENT if email sends successfully.")
+    @ApiResponse(responseCode = "200", description = "Invoice sent via email and marked as SENT")
     @ApiResponse(responseCode = "404", description = "Invoice not found")
     @ApiResponse(responseCode = "422", description = "Invoice cannot be sent (invalid status or missing requirements)")
-    public ResponseEntity<InvoiceResponse> markAsSent(@PathVariable UUID id) {
-        InvoiceResponse response = invoiceCommandService.markAsSent(id);
+    @ApiResponse(responseCode = "500", description = "Email sending failed")
+    public ResponseEntity<InvoiceResponse> sendViaEmail(@PathVariable UUID id) {
+        InvoiceResponse response = invoiceCommandService.sendInvoiceViaEmail(id);
         return ResponseEntity.ok(response);
     }
 

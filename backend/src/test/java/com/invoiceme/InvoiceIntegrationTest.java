@@ -1,5 +1,7 @@
 package com.invoiceme;
 
+import com.invoiceme.BaseIntegrationTest;
+import com.invoiceme.application.invoice.EmailService;
 import com.invoiceme.application.invoice.InvoiceCommandService;
 import com.invoiceme.application.invoice.InvoiceQueryService;
 import com.invoiceme.application.invoice.dto.CreateInvoiceRequest;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,6 +31,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -46,6 +51,9 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @MockBean
+    private EmailService emailService;
+
     private Customer testCustomer;
 
     @BeforeEach
@@ -53,6 +61,8 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
         invoiceRepository.deleteAll();
         customerRepository.deleteAll();
         testCustomer = customerRepository.save(new Customer("Test Customer", "test@example.com", null, null));
+        // Mock email service to do nothing (we're testing invoice logic, not email sending)
+        doNothing().when(emailService).sendInvoiceEmail(any(), any());
     }
 
     @Test
@@ -226,7 +236,7 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testMarkInvoiceAsSent_ValidTransition_Success() {
+    void testSendInvoiceViaEmail_ValidTransition_Success() {
         // Given
         Invoice invoice = new Invoice(testCustomer);
         invoice.addLineItem("Item", 10, BigDecimal.valueOf(100.00));
@@ -234,7 +244,7 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
         UUID invoiceId = savedInvoice.getId();
 
         // When
-        InvoiceResponse response = commandService.markAsSent(invoiceId);
+        InvoiceResponse response = commandService.sendInvoiceViaEmail(invoiceId);
 
         // Then
         assertThat(response).isNotNull();
@@ -244,10 +254,13 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
         // Verify updated in database
         Invoice updatedInvoice = invoiceRepository.findById(invoiceId).orElseThrow();
         assertThat(updatedInvoice.getStatus()).isEqualTo(InvoiceStatus.SENT);
+        
+        // Verify email service was called
+        verify(emailService, times(1)).sendInvoiceEmail(any(), any());
     }
 
     @Test
-    void testMarkInvoiceAsSent_NoLineItems_Fails() {
+    void testSendInvoiceViaEmail_NoLineItems_Fails() {
         // Given
         Invoice invoice = new Invoice(testCustomer);
         // No line items added
@@ -255,13 +268,16 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
         UUID invoiceId = savedInvoice.getId();
 
         // When/Then
-        assertThatThrownBy(() -> commandService.markAsSent(invoiceId))
+        assertThatThrownBy(() -> commandService.sendInvoiceViaEmail(invoiceId))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Invoice cannot be marked as SENT");
+        
+        // Verify email service was NOT called
+        verify(emailService, never()).sendInvoiceEmail(any(), any());
     }
 
     @Test
-    void testMarkInvoiceAsSent_AlreadySent_Fails() {
+    void testSendInvoiceViaEmail_AlreadySent_Fails() {
         // Given
         Invoice invoice = new Invoice(testCustomer);
         invoice.addLineItem("Item", 1, BigDecimal.valueOf(100.00));
@@ -270,13 +286,16 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
         UUID invoiceId = savedInvoice.getId();
 
         // When/Then
-        assertThatThrownBy(() -> commandService.markAsSent(invoiceId))
+        assertThatThrownBy(() -> commandService.sendInvoiceViaEmail(invoiceId))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Invoice cannot be marked as SENT");
+        
+        // Verify email service was NOT called
+        verify(emailService, never()).sendInvoiceEmail(any(), any());
     }
 
     @Test
-    void testMarkInvoiceAsSent_ZeroTotal_Fails() {
+    void testSendInvoiceViaEmail_ZeroTotal_Fails() {
         // Given
         Invoice invoice = new Invoice(testCustomer);
         // Add line item with zero quantity or price to get zero total
@@ -285,9 +304,34 @@ class InvoiceIntegrationTest extends BaseIntegrationTest {
         UUID invoiceId = savedInvoice.getId();
 
         // When/Then
-        assertThatThrownBy(() -> commandService.markAsSent(invoiceId))
+        assertThatThrownBy(() -> commandService.sendInvoiceViaEmail(invoiceId))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Invoice cannot be marked as SENT");
+        
+        // Verify email service was NOT called
+        verify(emailService, never()).sendInvoiceEmail(any(), any());
+    }
+
+    @Test
+    void testSendInvoiceViaEmail_EmailFailure_DoesNotMarkAsSent() {
+        // Given
+        Invoice invoice = new Invoice(testCustomer);
+        invoice.addLineItem("Item", 10, BigDecimal.valueOf(100.00));
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+        UUID invoiceId = savedInvoice.getId();
+        
+        // Mock email service to throw exception
+        doThrow(new com.invoiceme.infrastructure.email.EmailException("Email sending failed"))
+                .when(emailService).sendInvoiceEmail(any(), any());
+
+        // When/Then
+        assertThatThrownBy(() -> commandService.sendInvoiceViaEmail(invoiceId))
+                .isInstanceOf(com.invoiceme.infrastructure.email.EmailException.class)
+                .hasMessageContaining("Email sending failed");
+        
+        // Verify invoice status is still DRAFT
+        Invoice updatedInvoice = invoiceRepository.findById(invoiceId).orElseThrow();
+        assertThat(updatedInvoice.getStatus()).isEqualTo(InvoiceStatus.DRAFT);
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.invoiceme.domain.invoice.Invoice;
 import com.invoiceme.domain.invoice.LineItem;
 import com.invoiceme.infrastructure.persistence.CustomerRepository;
 import com.invoiceme.infrastructure.persistence.InvoiceRepository;
+import com.invoiceme.infrastructure.email.EmailException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class InvoiceCommandService {
     private final InvoiceRepository invoiceRepository;
     private final CustomerRepository customerRepository;
     private final InvoiceMapper invoiceMapper;
+    private final EmailService emailService;
+    private final InvoicePdfService invoicePdfService;
 
     /**
      * Creates a new invoice in DRAFT status.
@@ -110,17 +113,18 @@ public class InvoiceCommandService {
     }
 
     /**
-     * Marks an invoice as SENT.
-     * Validates that invoice can be marked as SENT before transitioning.
+     * Sends invoice via email to customer and marks it as SENT.
+     * Generates PDF, sends email with PDF attachment, and only marks as SENT if email sends successfully.
      * 
      * @param id Invoice ID
      * @return InvoiceResponse with updated invoice data
      * @throws EntityNotFoundException if invoice not found
      * @throws IllegalStateException if invoice cannot be marked as SENT
+     * @throws EmailException if email sending fails (invoice will not be marked as SENT)
      */
-    public InvoiceResponse markAsSent(UUID id) {
-        // Find invoice
-        Invoice invoice = invoiceRepository.findById(id)
+    public InvoiceResponse sendInvoiceViaEmail(UUID id) {
+        // Find invoice with customer eagerly loaded (needed for email and PDF generation)
+        Invoice invoice = invoiceRepository.findByIdWithCustomer(id)
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found with id: " + id));
 
         // Validate invoice can be marked as sent
@@ -131,7 +135,14 @@ public class InvoiceCommandService {
             );
         }
 
-        // Mark as sent using domain method
+        // Generate PDF
+        byte[] pdfBytes = invoicePdfService.generatePdf(id);
+
+        // Send email with PDF attachment
+        // If email fails, exception will be thrown and invoice will not be marked as SENT
+        emailService.sendInvoiceEmail(invoice, pdfBytes);
+
+        // Only mark as SENT if email was sent successfully
         invoice.markAsSent();
 
         // Save updated invoice
