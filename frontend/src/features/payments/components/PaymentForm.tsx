@@ -1,7 +1,7 @@
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -55,17 +55,28 @@ export function PaymentForm({
     )
   }, [invoice])
 
-  // Set default payment date to today
-  const today = new Date().toISOString().split('T')[0]
+  // Set default payment date to today (in local timezone, not UTC)
+  // Use local date to avoid timezone issues that could make it tomorrow
+  const today = new Date().toLocaleDateString('en-CA') // Returns YYYY-MM-DD in local timezone
 
   const form = useForm<PaymentFormData>({
     resolver: zodResolver(enhancedSchema),
+    mode: 'onChange', // Validate on change for better UX
     defaultValues: {
-      invoiceId: '',
-      amount: 0,
+      invoiceId: preSelectedInvoiceId || '',
+      amount: 0, // Will be validated - user must enter a value
       paymentDate: today,
     },
   })
+
+  // Sync preSelectedInvoiceId to form field when it changes
+  useEffect(() => {
+    if (preSelectedInvoiceId) {
+      form.setValue('invoiceId', preSelectedInvoiceId)
+      form.trigger('invoiceId')
+      setSelectedInvoiceId(preSelectedInvoiceId)
+    }
+  }, [preSelectedInvoiceId, form])
 
   // Watch amount field for real-time balance calculation
   const watchedAmount = useWatch({
@@ -87,15 +98,39 @@ export function PaymentForm({
   }
 
   const handleSubmit = (data: PaymentFormData) => {
-    onSubmit({
+    console.log('Form submitted with data:', JSON.stringify(data, null, 2))
+    // Convert date string (YYYY-MM-DD) to LocalDateTime format (YYYY-MM-DDTHH:mm:ss)
+    // Backend expects LocalDateTime format - Spring Boot accepts ISO-8601 without timezone
+    // Use local date to ensure it's not in the future due to timezone issues
+    const selectedDate = data.paymentDate || today
+    // Ensure the date is not in the future by using today if selected date is after today
+    const todayDate = new Date().toLocaleDateString('en-CA')
+    const finalDate = selectedDate > todayDate ? todayDate : selectedDate
+    const paymentDate = `${finalDate}T00:00:00`
+    
+    const paymentRequest = {
       invoiceId: data.invoiceId,
       amount: data.amount,
-      paymentDate: data.paymentDate,
-    })
+      paymentDate: paymentDate,
+    }
+    
+    console.log('Payment request being sent:', JSON.stringify(paymentRequest, null, 2))
+    onSubmit(paymentRequest)
+  }
+
+  // Handle form submission errors
+  const handleFormError = (errors: any) => {
+    console.error('Form validation errors:', errors)
+    // Scroll to first error
+    const firstErrorField = Object.keys(errors)[0]
+    if (firstErrorField) {
+      const element = document.querySelector(`[name="${firstErrorField}"]`)
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
   }
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+    <form onSubmit={form.handleSubmit(handleSubmit, handleFormError)} className="space-y-6">
       {/* Invoice Selector */}
       <InvoiceSelector
         value={selectedInvoiceId}
@@ -152,11 +187,9 @@ export function PaymentForm({
           step="0.01"
           min="0.01"
           max={invoice?.balance || undefined}
+          placeholder="0.00"
           {...form.register('amount', {
             valueAsNumber: true,
-            onChange: () => {
-              form.trigger('amount')
-            },
           })}
           className={form.formState.errors.amount ? 'border-red-500' : ''}
           aria-label="Payment amount"
@@ -184,6 +217,7 @@ export function PaymentForm({
         <Input
           id="paymentDate"
           type="date"
+          max={today} // Prevent selecting future dates
           {...form.register('paymentDate')}
           className={form.formState.errors.paymentDate ? 'border-red-500' : ''}
           aria-label="Payment date"

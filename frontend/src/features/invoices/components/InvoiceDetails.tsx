@@ -62,13 +62,29 @@ export function InvoiceDetails({
 
   const handleRecordPayment = async (data: PaymentRequest) => {
     try {
-      await recordPaymentMutation.mutateAsync(data)
+      console.log('Recording payment with data:', data)
+      const result = await recordPaymentMutation.mutateAsync(data)
+      console.log('Payment recorded successfully:', result)
       // Invalidate invoice query to refresh balance
       queryClient.invalidateQueries({ queryKey: ['invoices', invoice.id] })
+      queryClient.invalidateQueries({ queryKey: ['payments'] })
       setIsPaymentFormOpen(false)
-      console.log('Payment recorded successfully')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to record payment:', error)
+      const errorData = error?.response?.data
+      const validationErrors = errorData?.validationErrors
+      const errorMessage = validationErrors 
+        ? `Validation errors: ${JSON.stringify(validationErrors, null, 2)}`
+        : errorData?.message || error?.message || 'Unknown error'
+      
+      console.error('Error details:', {
+        message: error?.message,
+        response: errorData,
+        status: error?.response?.status,
+        validationErrors: validationErrors,
+      })
+      // Keep dialog open on error so user can see the error
+      alert(`Failed to record payment:\n${errorMessage}`)
     }
   }
 

@@ -75,6 +75,7 @@ export function PaymentList({
             <TableRow>
               <TableHead>Payment #</TableHead>
               <TableHead>Invoice #</TableHead>
+              <TableHead>Customer</TableHead>
               <TableHead className="text-right">Amount</TableHead>
               <TableHead>Payment Date</TableHead>
               <TableHead>Created</TableHead>
@@ -89,6 +90,9 @@ export function PaymentList({
                 </TableCell>
                 <TableCell>
                   {payment.invoiceNumber || formatInvoiceNumber(payment.invoiceId)}
+                </TableCell>
+                <TableCell>
+                  {payment.customerName || 'Unknown'}
                 </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(payment.amount)}

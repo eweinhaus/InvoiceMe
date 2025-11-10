@@ -17,6 +17,9 @@ public record PaymentResponse(
         @Schema(description = "Invoice number", example = "INV-2024-001")
         String invoiceNumber,
         
+        @Schema(description = "Customer name", example = "John Doe")
+        String customerName,
+        
         @Schema(description = "Payment amount", example = "500.00")
         BigDecimal amount,
         

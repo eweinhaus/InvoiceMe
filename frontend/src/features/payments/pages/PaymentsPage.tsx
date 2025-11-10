@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   Dialog,
   DialogContent,
@@ -110,24 +104,28 @@ export function PaymentsPage() {
           <label htmlFor="invoice-filter" className="text-sm font-medium mb-2 block">
             Invoice
           </label>
-          <Select
+          <SearchableSelect
+            options={[
+              { value: 'ALL', label: 'All Invoices' },
+              ...invoices.map((invoice) => ({
+                value: invoice.id,
+                label: `${formatInvoiceNumber(invoice.id)}${invoice.customerName ? ` - ${invoice.customerName}` : ''}`,
+              })),
+            ]}
             value={viewModel.filters.invoiceId || 'ALL'}
             onValueChange={handleInvoiceFilterChange}
             disabled={isLoadingInvoices}
-          >
-            <SelectTrigger id="invoice-filter" aria-label="Filter by invoice">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Invoices</SelectItem>
-              {invoices.map((invoice) => (
-                <SelectItem key={invoice.id} value={invoice.id}>
-                  {formatInvoiceNumber(invoice.id)}
-                  {invoice.customerName && ` - ${invoice.customerName}`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="All Invoices"
+            searchPlaceholder="Search invoices by number or customer..."
+            emptyMessage="No invoices found"
+            getSearchableText={(option) => {
+              if (option.value === 'ALL') return option.label
+              const invoice = invoices.find((inv) => inv.id === option.value)
+              return invoice
+                ? `${formatInvoiceNumber(invoice.id)} ${invoice.customerName || ''}`
+                : option.label
+            }}
+          />
         </div>
       </div>
 

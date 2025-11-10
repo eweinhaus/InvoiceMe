@@ -55,4 +55,14 @@ Overview of deliverables folder contents.
 **Project**: InvoiceMe - AI-Assisted Full-Stack ERP Assessment
 **Status**: All core functionality complete, deliverables prepared
 
+---
+
+## Authentication Credentials
+
+**Note**: For testing and demonstration purposes:
+- **Username**: `username`
+- **Password**: `password`
+
+The application is currently running in dev mode with permissive authentication. All API endpoints are accessible without authentication when `APP_AUTH_DEV_MODE=true`.
+
 

@@ -9,6 +9,7 @@ export interface Payment {
   id: string
   invoiceId: string
   invoiceNumber?: string // Optional, for display convenience
+  customerName?: string // Customer name from invoice
   amount: number
   paymentDate: string
   createdAt: string
@@ -41,6 +42,8 @@ export function mapPaymentResponse(response: PaymentResponse): Payment {
   return {
     id: response.id || '',
     invoiceId: response.invoiceId || '',
+    invoiceNumber: response.invoiceNumber || undefined,
+    customerName: response.customerName || undefined,
     amount: response.amount || 0,
     paymentDate: response.paymentDate || '',
     createdAt: response.createdAt || '',

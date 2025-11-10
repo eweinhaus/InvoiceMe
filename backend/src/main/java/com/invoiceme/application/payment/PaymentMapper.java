@@ -17,11 +17,12 @@ public interface PaymentMapper {
 
     /**
      * Maps Payment entity to PaymentResponse DTO.
-     * Includes invoice ID and invoice number from the invoice relationship.
+     * Includes invoice ID, invoice number, and customer name from the invoice relationship.
      * Invoice number is generated from invoice ID (first 8 characters).
      */
     @Mapping(target = "invoiceId", source = "invoice.id")
     @Mapping(target = "invoiceNumber", expression = "java(generateInvoiceNumber(payment))")
+    @Mapping(target = "customerName", source = "invoice.customer.name")
     PaymentResponse toResponse(Payment payment);
 
     /**

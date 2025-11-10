@@ -32,7 +32,7 @@ public class PaymentQueryService {
      * @throws EntityNotFoundException if payment not found
      */
     public PaymentResponse getById(UUID id) {
-        Payment payment = paymentRepository.findById(id)
+        Payment payment = paymentRepository.findByIdWithInvoiceAndCustomer(id)
                 .orElseThrow(() -> new EntityNotFoundException("Payment not found with id: " + id));
 
         return paymentMapper.toResponse(payment);
@@ -46,7 +46,7 @@ public class PaymentQueryService {
      * @return Page of PaymentResponse for specified invoice
      */
     public Page<PaymentResponse> getByInvoiceId(UUID invoiceId, Pageable pageable) {
-        return paymentRepository.findByInvoice_Id(invoiceId, pageable)
+        return paymentRepository.findByInvoiceIdWithInvoiceAndCustomer(invoiceId, pageable)
                 .map(paymentMapper::toResponse);
     }
 
@@ -57,7 +57,7 @@ public class PaymentQueryService {
      * @return Page of PaymentResponse
      */
     public Page<PaymentResponse> getAll(Pageable pageable) {
-        return paymentRepository.findAll(pageable)
+        return paymentRepository.findAllWithInvoiceAndCustomer(pageable)
                 .map(paymentMapper::toResponse);
     }
 }

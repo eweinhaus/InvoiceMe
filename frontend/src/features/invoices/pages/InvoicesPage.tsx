@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   Dialog,
   DialogContent,
@@ -165,23 +166,26 @@ export function InvoicesPage() {
           <label htmlFor="customer-filter" className="text-sm font-medium mb-2 block">
             Customer
           </label>
-          <Select
+          <SearchableSelect
+            options={[
+              { value: 'ALL', label: 'All Customers' },
+              ...customers.map((customer) => ({
+                value: customer.id,
+                label: customer.name,
+              })),
+            ]}
             value={viewModel.filters.customerId || 'ALL'}
             onValueChange={handleCustomerFilterChange}
             disabled={isLoadingCustomers}
-          >
-            <SelectTrigger id="customer-filter" aria-label="Filter by customer">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Customers</SelectItem>
-              {customers.map((customer) => (
-                <SelectItem key={customer.id} value={customer.id}>
-                  {customer.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="All Customers"
+            searchPlaceholder="Search customers by name..."
+            emptyMessage="No customers found"
+            getSearchableText={(option) => {
+              if (option.value === 'ALL') return option.label
+              const customer = customers.find((c) => c.id === option.value)
+              return customer ? `${customer.name} ${customer.email}` : option.label
+            }}
+          />
         </div>
       </div>
 

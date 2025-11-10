@@ -65,8 +65,22 @@ export async function getPaymentById(id: string): Promise<Payment> {
 export async function recordPayment(
   data: PaymentRequest
 ): Promise<Payment> {
-  const response = await apiClient.post<PaymentResponse>('/payments', data)
-  return mapPaymentResponse(response.data)
+  console.log('Sending payment request to API:', data)
+  try {
+    const response = await apiClient.post<PaymentResponse>('/payments', data)
+    console.log('Payment API response:', response.data)
+    return mapPaymentResponse(response.data)
+  } catch (error: any) {
+    const errorDetails = {
+      message: error?.message,
+      response: error?.response?.data,
+      status: error?.response?.status,
+      requestData: data,
+      validationErrors: error?.response?.data?.validationErrors,
+    }
+    console.error('Payment API error:', JSON.stringify(errorDetails, null, 2))
+    throw error
+  }
 }
 
 

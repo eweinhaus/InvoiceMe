@@ -3,13 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { LineItemForm } from './LineItemForm'
 import type {
   Invoice,
@@ -117,30 +111,28 @@ export function InvoiceForm({
         <Label htmlFor="customerId">
           Customer <span className="text-destructive">*</span>
         </Label>
-        <Select
+        <SearchableSelect
+          options={
+            customers.length === 0
+              ? [{ value: 'no-customers', label: 'No customers available', disabled: true }]
+              : customers.map((customer) => ({
+                  value: customer.id,
+                  label: `${customer.name} (${customer.email})`,
+                }))
+          }
           value={form.watch('customerId') || ''}
           onValueChange={(value) => {
             form.setValue('customerId', value, { shouldValidate: true })
           }}
+          placeholder="Select a customer"
           disabled={mode === 'edit'} // Disable in edit mode
-        >
-          <SelectTrigger id="customerId" aria-label="Select customer">
-            <SelectValue placeholder="Select a customer" />
-          </SelectTrigger>
-          <SelectContent>
-            {customers.length === 0 ? (
-              <SelectItem value="no-customers" disabled>
-                No customers available
-              </SelectItem>
-            ) : (
-              customers.map((customer) => (
-                <SelectItem key={customer.id} value={customer.id}>
-                  {customer.name} ({customer.email})
-                </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
+          searchPlaceholder="Search customers by name or email..."
+          emptyMessage="No customers found"
+          getSearchableText={(option) => {
+            const customer = customers.find((c) => c.id === option.value)
+            return customer ? `${customer.name} ${customer.email}` : option.label
+          }}
+        />
         {form.formState.errors.customerId && (
           <p className="text-sm text-destructive mt-1" role="alert">
             {form.formState.errors.customerId.message}
