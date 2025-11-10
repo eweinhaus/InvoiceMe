@@ -42,8 +42,8 @@ export function mapPaymentResponse(response: PaymentResponse): Payment {
   return {
     id: response.id || '',
     invoiceId: response.invoiceId || '',
-    invoiceNumber: response.invoiceNumber || undefined,
-    customerName: response.customerName || undefined,
+    invoiceNumber: undefined, // Not provided by API, will be populated separately if needed
+    customerName: undefined, // Not provided by API, will be populated separately if needed
     amount: response.amount || 0,
     paymentDate: response.paymentDate || '',
     createdAt: response.createdAt || '',

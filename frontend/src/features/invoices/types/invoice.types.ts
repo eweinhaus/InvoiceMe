@@ -62,7 +62,7 @@ export function mapInvoiceResponse(response: InvoiceResponse): Invoice {
   return {
     id: response.id || '',
     customerId: response.customerId || '',
-    customerName: response.customerName || undefined, // Include customerName from backend
+    customerName: undefined, // Not provided by API, will be populated separately if needed
     status: (response.status as InvoiceStatus) || InvoiceStatus.DRAFT,
     lineItems: (response.lineItems || []).map(item => ({
       description: item.description || '',
