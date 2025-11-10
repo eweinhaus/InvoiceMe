@@ -26,6 +26,8 @@ import type { PaymentRequest } from '@/features/payments/types/payment.types'
 import { formatCurrency, formatDate } from '@/lib/utils/formatters'
 import { useRecordPayment } from '@/features/payments/hooks/usePaymentMutations'
 import { useQueryClient } from '@tanstack/react-query'
+import { Download, CreditCard, Send, X } from 'lucide-react'
+import apiClient from '@/lib/api/client'
 
 interface InvoiceDetailsProps {
   open: boolean
@@ -54,6 +56,67 @@ export function InvoiceDetails({
 
   const formatInvoiceNumber = (id: string) => {
     return `INV-${id.substring(0, 8).toUpperCase()}`
+  }
+
+  const handleDownloadPdf = async () => {
+    try {
+      // Use apiClient with blob response type for PDF download
+      const response = await apiClient.get(`/invoices/${invoice.id}/pdf`, {
+        responseType: 'blob', // Important: tells axios to handle binary data
+      })
+      
+      // Create blob from response data
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `invoice-${invoice.id.substring(0, 8)}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      
+      // Cleanup
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error: any) {
+      console.error('Failed to download PDF:', error)
+      console.error('Error details:', {
+        message: error?.message,
+        status: error?.response?.status,
+        statusText: error?.response?.statusText,
+        data: error?.response?.data,
+        config: error?.config,
+      })
+      
+      // Extract error message
+      let errorMessage = 'Failed to download PDF. Please try again.'
+      
+      if (error?.response) {
+        const status = error.response.status
+        if (status === 404) {
+          errorMessage = 'Invoice not found. Please check the invoice ID.'
+        } else if (status === 401) {
+          errorMessage = 'Authentication required. Please log in and try again.'
+        } else if (status === 500) {
+          errorMessage = 'Server error while generating PDF. Please check the backend logs and try again.'
+        } else if (error.response.data?.message) {
+          errorMessage = error.response.data.message
+        } else {
+          errorMessage = `Error ${status}: ${error.response.statusText || 'Unknown error'}. Please check the console for details.`
+        }
+      } else if (error?.message) {
+        errorMessage = `${error.message}. Please check the console for details.`
+      }
+      
+      // Show user-friendly error
+      alert(errorMessage)
+      
+      // Log full error for debugging
+      if (error?.response?.status) {
+        console.error(`PDF download failed with status ${error.response.status}`)
+      }
+    }
   }
 
   const paidAmount = invoice.totalAmount - invoice.balance
@@ -252,24 +315,42 @@ export function InvoiceDetails({
             {hasBalance && (
               <Button
                 onClick={() => setIsPaymentFormOpen(true)}
-                variant="default"
+                variant="outline"
+                className="flex items-center gap-2"
               >
+                <CreditCard className="h-4 w-4" />
                 Record Payment
               </Button>
             )}
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleDownloadPdf}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </Button>
             {invoice.status === InvoiceStatus.DRAFT && onMarkAsSent && (
               <Button
                 onClick={() => {
                   onMarkAsSent(invoice)
                   onOpenChange(false)
                 }}
+                variant="outline"
+                className="flex items-center gap-2"
               >
+                <Send className="h-4 w-4" />
                 Mark as Sent
               </Button>
             )}
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="flex items-center gap-2"
+            >
+              <X className="h-4 w-4" />
               Close
             </Button>
           </div>

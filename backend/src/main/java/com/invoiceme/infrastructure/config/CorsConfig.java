@@ -21,7 +21,7 @@ public class CorsConfig {
             "https://*.onrender.com"     // Allow any Render static site
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
+        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-Requested-With", "Accept"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

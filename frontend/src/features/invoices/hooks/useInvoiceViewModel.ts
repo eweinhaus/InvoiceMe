@@ -32,20 +32,24 @@ export function useInvoiceViewModel() {
 
   // Conditionally call appropriate query hook based on filters
   const hasStatusFilter = statusFilter !== 'ALL'
-  const hasCustomerFilter = customerFilter !== null
+  const hasCustomerFilter = customerFilter !== null && customerFilter !== 'ALL'
   const hasBothFilters = hasStatusFilter && hasCustomerFilter
 
   const allInvoicesQuery = useInvoices(page, size)
   const statusQuery = useInvoicesByStatus(
-    statusFilter as InvoiceStatus,
+    statusFilter, // Now accepts 'ALL' but query is disabled when 'ALL'
     page,
     size
   )
-  const customerQuery = useInvoicesByCustomer(customerFilter!, page, size)
+  const customerQuery = useInvoicesByCustomer(
+    customerFilter || '', 
+    page, 
+    size
+  )
   const combinedQuery = useInvoicesWithFilters(
     {
       status: statusFilter !== 'ALL' ? statusFilter : undefined,
-      customerId: customerFilter || undefined,
+      customerId: customerFilter && customerFilter !== 'ALL' ? customerFilter : undefined,
     },
     page,
     size

@@ -21,7 +21,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,7 @@ public class InvoiceController {
 
     private final InvoiceCommandService invoiceCommandService;
     private final InvoiceQueryService invoiceQueryService;
+    private final com.invoiceme.application.invoice.InvoicePdfService invoicePdfService;
 
     @PostMapping
     @Operation(summary = "Create a new invoice", description = "Creates a new invoice in DRAFT status with line items")
@@ -110,6 +113,24 @@ public class InvoiceController {
     public ResponseEntity<InvoiceResponse> markAsSent(@PathVariable UUID id) {
         InvoiceResponse response = invoiceCommandService.markAsSent(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/pdf")
+    @Operation(summary = "Download invoice as PDF", 
+               description = "Generates and downloads the invoice as a PDF document")
+    @ApiResponse(responseCode = "200", description = "PDF generated successfully")
+    @ApiResponse(responseCode = "404", description = "Invoice not found")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable UUID id) {
+        byte[] pdfBytes = invoicePdfService.generatePdf(id);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice-" + id.toString().substring(0, 8) + ".pdf");
+        headers.setContentLength(pdfBytes.length);
+        
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
 }
 

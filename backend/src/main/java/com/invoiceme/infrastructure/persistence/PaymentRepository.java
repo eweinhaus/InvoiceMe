@@ -32,7 +32,8 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
      * @return Payment with invoice and customer loaded
      */
     @EntityGraph(attributePaths = {"invoice", "invoice.customer"})
-    Optional<Payment> findByIdWithInvoiceAndCustomer(UUID id);
+    @Query("SELECT p FROM Payment p WHERE p.id = :id")
+    Optional<Payment> findByIdWithInvoiceAndCustomer(@Param("id") UUID id);
 
     /**
      * Finds all payments with invoice and customer eagerly fetched.

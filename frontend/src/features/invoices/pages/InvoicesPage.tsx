@@ -135,7 +135,7 @@ export function InvoicesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold">Invoices</h1>
-        <Button onClick={handleCreateInvoice} aria-label="Create new invoice">
+        <Button onClick={handleCreateInvoice} aria-label="Create new invoice" className="hover:bg-blue-600">
           Create Invoice
         </Button>
       </div>

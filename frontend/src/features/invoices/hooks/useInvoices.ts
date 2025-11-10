@@ -28,15 +28,16 @@ export function useInvoices(page: number = 0, size: number = 20) {
  * Query hook to fetch invoices by status
  */
 export function useInvoicesByStatus(
-  status: InvoiceStatus,
+  status: InvoiceStatus | 'ALL',
   page: number = 0,
   size: number = 20
 ) {
   return useQuery<Page<Invoice>>({
     queryKey: ['invoices', 'status', status, page, size],
-    queryFn: () => getInvoicesByStatus(status, page, size),
+    queryFn: () => getInvoicesByStatus(status as InvoiceStatus, page, size),
     staleTime: 30000,
     gcTime: 300000,
+    enabled: status !== 'ALL', // Disable query when status is 'ALL'
   })
 }
 
