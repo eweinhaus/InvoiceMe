@@ -62,7 +62,7 @@ export function mapInvoiceResponse(response: InvoiceResponse): Invoice {
   return {
     id: response.id || '',
     customerId: response.customerId || '',
-    customerName: response.customerName || undefined, // Map customerName from API response
+    customerName: (response as any).customerName || undefined, // Map customerName from API response (may not be in OpenAPI schema)
     status: (response.status as InvoiceStatus) || InvoiceStatus.DRAFT,
     lineItems: (response.lineItems || []).map(item => ({
       description: item.description || '',
