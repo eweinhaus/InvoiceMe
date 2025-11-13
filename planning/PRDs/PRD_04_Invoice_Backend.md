@@ -201,3 +201,4 @@ This PRD implements the complete backend for Invoice management with rich domain
 - Balance calculation can be stubbed initially, fully tested with PRD 06
 
 
+

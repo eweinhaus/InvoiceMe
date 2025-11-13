@@ -28,13 +28,14 @@ public class InvoiceQueryService {
     /**
      * Gets an invoice by ID.
      * Calculates balance by querying payments.
+     * Uses findByIdWithCustomer to eagerly fetch customer for customerName mapping.
      * 
      * @param id Invoice ID
      * @return InvoiceResponse with invoice data
      * @throws EntityNotFoundException if invoice not found
      */
     public InvoiceResponse getById(UUID id) {
-        Invoice invoice = invoiceRepository.findById(id)
+        Invoice invoice = invoiceRepository.findByIdWithCustomer(id)
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found with id: " + id));
 
         // Calculate balance by querying payments

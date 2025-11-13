@@ -17,22 +17,37 @@ import java.util.UUID;
 public interface InvoiceRepository extends JpaRepository<Invoice, UUID> {
 
     /**
+     * Finds all invoices with pagination.
+     * Eagerly fetches customer to avoid N+1 queries and ensure customerName is available.
+     * 
+     * @param pageable Pagination parameters
+     * @return Page of invoices with customer loaded
+     */
+    @EntityGraph(attributePaths = {"customer"})
+    @Override
+    Page<Invoice> findAll(Pageable pageable);
+
+    /**
      * Finds invoices by status with pagination.
+     * Eagerly fetches customer to avoid N+1 queries and ensure customerName is available.
      * 
      * @param status Invoice status
      * @param pageable Pagination parameters
      * @return Page of invoices with the specified status
      */
+    @EntityGraph(attributePaths = {"customer"})
     Page<Invoice> findByStatus(InvoiceStatus status, Pageable pageable);
 
     /**
      * Finds invoices by customer ID with pagination.
      * Uses customer.id property path for the @ManyToOne relationship.
+     * Eagerly fetches customer to avoid N+1 queries and ensure customerName is available.
      * 
      * @param customerId Customer ID
      * @param pageable Pagination parameters
      * @return Page of invoices for the specified customer
      */
+    @EntityGraph(attributePaths = {"customer"})
     Page<Invoice> findByCustomer_Id(UUID customerId, Pageable pageable);
 
     /**

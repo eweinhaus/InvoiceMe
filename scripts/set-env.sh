@@ -24,3 +24,4 @@ echo "Region: $AWS_REGION"
 echo "Environment: $ENVIRONMENT"
 
 
+

@@ -23,20 +23,32 @@ export function LineItemForm({
   canRemove = true,
 }: LineItemFormProps) {
   const [description, setDescription] = useState(lineItem.description || '')
-  const [quantity, setQuantity] = useState(lineItem.quantity || 1)
-  const [unitPrice, setUnitPrice] = useState(lineItem.unitPrice || 0)
+  // Store as strings to allow empty values during editing
+  const [quantity, setQuantity] = useState(String(lineItem.quantity || 1))
+  const [unitPrice, setUnitPrice] = useState(String(lineItem.unitPrice || 0))
 
-  // Calculate subtotal
+  // Sync state when lineItem prop changes
+  useEffect(() => {
+    setDescription(lineItem.description || '')
+    setQuantity(String(lineItem.quantity || 1))
+    setUnitPrice(String(lineItem.unitPrice || 0))
+  }, [lineItem.description, lineItem.quantity, lineItem.unitPrice])
+
+  // Calculate subtotal from numeric values
   const subtotal = useMemo(() => {
-    return Number((quantity * unitPrice).toFixed(2))
+    const qty = parseFloat(quantity) || 0
+    const price = parseFloat(unitPrice) || 0
+    return Number((qty * price).toFixed(2))
   }, [quantity, unitPrice])
 
-  // Update parent when fields change
+  // Update parent when fields change (convert to numbers)
   useEffect(() => {
+    const qty = parseFloat(quantity) || 1
+    const price = parseFloat(unitPrice) || 0
     onChange(index, {
       description,
-      quantity,
-      unitPrice,
+      quantity: qty,
+      unitPrice: price,
     })
   }, [description, quantity, unitPrice, index, onChange])
 
@@ -45,13 +57,74 @@ export function LineItemForm({
   }
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0
-    setQuantity(value > 0 ? value : 1)
+    const value = e.target.value
+    // Allow empty string during typing (for deletion)
+    if (value === '') {
+      setQuantity(value)
+      return
+    }
+    // Allow decimal point for partial entry (e.g., "1.")
+    if (value.endsWith('.') && /^\d+\.?$/.test(value)) {
+      setQuantity(value)
+      return
+    }
+    // Only update if it's a valid positive number
+    const numValue = parseFloat(value)
+    if (!isNaN(numValue) && numValue > 0) {
+      setQuantity(value)
+    } else if (numValue === 0) {
+      // Allow 0 temporarily so user can type "10" (starts with 0)
+      if (value === '0' || /^0\d+$/.test(value)) {
+        setQuantity(value)
+      }
+    }
+  }
+
+  const handleQuantityBlur = () => {
+    // Validate and set default on blur
+    const numValue = parseFloat(quantity)
+    if (isNaN(numValue) || numValue <= 0) {
+      setQuantity('1')
+    } else {
+      // Normalize to integer (remove decimal if whole number)
+      const intValue = Math.floor(numValue)
+      setQuantity(String(intValue))
+    }
   }
 
   const handleUnitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0
-    setUnitPrice(value >= 0 ? value : 0)
+    const value = e.target.value
+    // Allow empty string during typing (for deletion)
+    if (value === '') {
+      setUnitPrice(value)
+      return
+    }
+    // Allow decimal point for partial entry (e.g., "1.")
+    if (value.endsWith('.') && /^\d+\.?$/.test(value)) {
+      setUnitPrice(value)
+      return
+    }
+    // Allow negative sign only at the start (though we'll validate it's >= 0 on blur)
+    if (value === '-') {
+      setUnitPrice(value)
+      return
+    }
+    // Only update if it's a valid number
+    const numValue = parseFloat(value)
+    if (!isNaN(numValue)) {
+      setUnitPrice(value)
+    }
+  }
+
+  const handleUnitPriceBlur = () => {
+    // Validate and set default on blur
+    const numValue = parseFloat(unitPrice)
+    if (isNaN(numValue) || numValue < 0) {
+      setUnitPrice('0')
+    } else {
+      // Keep decimal precision
+      setUnitPrice(String(numValue))
+    }
   }
 
   return (
@@ -89,6 +162,7 @@ export function LineItemForm({
           step="1"
           value={quantity}
           onChange={handleQuantityChange}
+          onBlur={handleQuantityBlur}
           aria-label={`Line item ${index + 1} quantity`}
           aria-required="true"
           aria-invalid={!!errors?.quantity}
@@ -112,6 +186,7 @@ export function LineItemForm({
           step="0.01"
           value={unitPrice}
           onChange={handleUnitPriceChange}
+          onBlur={handleUnitPriceBlur}
           aria-label={`Line item ${index + 1} unit price`}
           aria-required="true"
           aria-invalid={!!errors?.unitPrice}

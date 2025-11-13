@@ -42,3 +42,4 @@ export function isAuthenticated(): boolean {
   return getCurrentUser() !== null
 }
 
+

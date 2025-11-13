@@ -18,3 +18,4 @@ public interface EmailService {
     void sendInvoiceEmail(Invoice invoice, byte[] pdfBytes) throws EmailException;
 }
 
+
